@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAMCommander", "RAMCommander\RAMCommander.csproj", "{24948007-7DBE-4363-9E7A-291B482D9536}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{24948007-7DBE-4363-9E7A-291B482D9536}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24948007-7DBE-4363-9E7A-291B482D9536}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24948007-7DBE-4363-9E7A-291B482D9536}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

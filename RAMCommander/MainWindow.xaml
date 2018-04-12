@@ -7,6 +7,104 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20px"></RowDefinition>
+            <RowDefinition Height="20px"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Menu Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0">
+            <MenuItem Header="File">
+                <MenuItem Header="New"></MenuItem>
+                <MenuItem Header="Rename"></MenuItem>
+                <MenuItem Header="Delete"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Folder">
+                <MenuItem Header="New"></MenuItem>
+                <MenuItem Header="Rename"></MenuItem>
+                <MenuItem Header="Delete"></MenuItem>
+            </MenuItem>
+        </Menu>
+
+        <Menu Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
+            <MenuItem Header="New file"></MenuItem>
+            <MenuItem Header="New folder"></MenuItem>
+            <MenuItem Header="Rename file"></MenuItem>
+            <MenuItem Header="Rename folder"></MenuItem>
+            <MenuItem Header="Delete file"></MenuItem>
+            <MenuItem Header="Delete folder"></MenuItem>
+        </Menu>
+
+        <Grid Grid.Row="2" Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="30px"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20px"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="20px"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBox Grid.Column="0" Grid.Row="0" Name="FirstPanelPath"></TextBox>
+            <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Name="FirstPanelButton"></CheckBox>
+
+            <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridCheckBoxColumn></DataGridCheckBoxColumn>
+                    <DataGridTemplateColumn Header="Type">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Type}"></Image>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}"></DataGridTextColumn>
+                    <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"></TextBox>
+        </Grid>
+
+
+        <Grid Grid.Row="2" Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="30px"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20px"></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="20px"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <TextBox Grid.Column="0" Grid.Row="0" Name="SecondPanelPath"></TextBox>
+            <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Name="SecondPanelButton"></CheckBox>
+
+            <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanelDirectoriesInfo">
+                <!--<Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition> -->
+                <!--Имя-->
+                <!--
+                    <ColumnDefinition></ColumnDefinition> -->
+                <!--Дата изменения-->
+                <!--
+                    <ColumnDefinition></ColumnDefinition> -->
+                <!--Размер-->
+                <!--
+                    <ColumnDefinition></ColumnDefinition> -->
+                <!--Права доступа-->
+                <!--
+                </Grid.ColumnDefinitions>-->
+            </DataGrid>
+
+            <TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"></TextBox>
+        </Grid>
     </Grid>
 </Window>
