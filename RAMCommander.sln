@@ -7,6 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RAMCommander", "RAMCommande
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{3BECF9D2-4018-41F1-BAFA-8BB353CFB758}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Res", "Res", "{3B6507BC-2242-43AA-B4A1-051C641B1B1F}"
+	ProjectSection(SolutionItems) = preProject
+		Res\back48.png = Res\back48.png
+		Res\file48.png = Res\file48.png
+		Res\folder48.png = Res\folder48.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

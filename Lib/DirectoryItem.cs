@@ -6,35 +6,37 @@ namespace Lib
     public class DirectoryItem : Item
     {
         private readonly DirectoryInfo _directoryInfo;
-        public List<FileItem> Files;
         public List<DirectoryItem> Directories;
+        public List<FileItem> Files;
+
+        public DirectoryItem(string path, bool parseSubs) : this(new DirectoryInfo(path), parseSubs)
+        {
+        }
 
         public DirectoryItem(DirectoryInfo directoryInfo, bool parseSubs)
         {
-            Type = @"C:\Users\alexe\OneDrive\Рабочий стол\Images\AI.png";
+            TypeImageSource = @"C:\Users\alexe\OneDrive\Рабочий стол\RAMcommander\Res\folder48.png";
             _directoryInfo = directoryInfo;
             Name = _directoryInfo.Name;
+            FullName = _directoryInfo.FullName;
+            Type = DIRECTORY;
             SizeItem = "";
             DateModified = _directoryInfo.LastWriteTimeUtc.ToString();
 
-            if (parseSubs)
-            {
-                Directories = ParseDirectories(_directoryInfo.GetDirectories());
-                Files = ParseFiles(_directoryInfo.GetFiles());
-                Subs = new List<Item>();
-                Subs.AddRange(Directories);
-                Subs.AddRange(Files);
-            }
+            if (!parseSubs) return;
+
+            Directories = ParseDirectories(_directoryInfo.GetDirectories());
+            Files = ParseFiles(_directoryInfo.GetFiles());
+            Subs = new List<Item> {new BackItem()};
+            Subs.AddRange(Directories);
+            Subs.AddRange(Files);
         }
 
         private List<DirectoryItem> ParseDirectories(DirectoryInfo[] directoryInfos)
         {
             List<DirectoryItem> items = new List<DirectoryItem>();
 
-            foreach (DirectoryInfo directoryInfo in directoryInfos)
-            {
-                items.Add(new DirectoryItem(directoryInfo, false));
-            }
+            foreach (DirectoryInfo directoryInfo in directoryInfos) items.Add(new DirectoryItem(directoryInfo, false));
 
             return items;
         }

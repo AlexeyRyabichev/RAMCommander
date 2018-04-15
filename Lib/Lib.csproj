@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BackItem.cs" />
     <Compile Include="DirectoryItem.cs" />
     <Compile Include="FileItem.cs" />
     <Compile Include="IItem.cs" />

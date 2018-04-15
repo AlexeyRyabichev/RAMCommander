@@ -8,9 +8,11 @@ namespace Lib
 
         public FileItem(FileInfo fileInfo)
         {
-            Type = @"C:\Users\alexe\OneDrive\Рабочий стол\Images\APK.png";
+            TypeImageSource = @"C:\Users\alexe\OneDrive\Рабочий стол\RAMcommander\Res\file48.png";
             _fileInfo = fileInfo;
             Name = _fileInfo.Name;
+            FullName = _fileInfo.FullName;
+            Type = FILE;
             if (_fileInfo.Length >> 20 == 0)
             {
                 if (_fileInfo.Length >> 10 == 0)
