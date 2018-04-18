@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Lib.ItemsTypes;
 
-namespace Lib
+namespace Lib.Interfaces
 {
     public interface IItem
     {

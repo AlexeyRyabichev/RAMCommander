@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Lib;
+using Lib.ItemsTypes;
 
 namespace RAMCommander
 {
@@ -32,14 +33,57 @@ namespace RAMCommander
             FirstPanel.PreviewKeyDown += PanelOnPreviewKeyDown;
             SecondPanel.PreviewKeyDown += PanelOnPreviewKeyDown;
 
+            FirstPanel.AllowDrop = true;
+            SecondPanel.AllowDrop = true;
+
+            FirstPanel.MouseDown += PanelOnMouseDown;
+            SecondPanel.MouseDown += PanelOnMouseDown;
+
+            FirstPanel.Drop += PanelOnDrop;
+            SecondPanel.Drop += PanelOnDrop;
+
             FillTable(true, @"C:\");
             FillTable(false, @"C:\Users\alexe\OneDrive\Рабочий стол\HSE_Stuff\KDZ3_DiscreteMath");
+        }
+
+        private void PanelOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        {
+            DataGrid dataGrid = (DataGrid) sender;
+
+            if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
+                DragDrop.DoDragDrop(dataGrid, ((Item)dataGrid.CurrentItem).FullName, DragDropEffects.Copy);
+        }
+
+        private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
+        {
+            string path = (string) dragEventArgs.Data.GetData(DataFormats.StringFormat);
+            Item currentItem = null;
+            if (Directory.Exists(path))
+                currentItem = new DirectoryItem(path, false);
+            else if (File.Exists(path))
+                currentItem = new FileItem(path);
+            if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid)sender).Name}");
         }
 
         private void PanelOnPreviewKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
             if (keyEventArgs.Key != Key.Enter && keyEventArgs.Key != Key.Back) return;
-            PanelOnMouseDoubleClick(sender, null);
+            switch (keyEventArgs.Key)
+            {
+                case Key.Enter:
+                    PanelOnMouseDoubleClick(sender, null);
+                    break;
+                case Key.Back:
+                    bool isFirst = ((DataGrid) sender).Name == "FirstPanel";
+                    string path = (isFirst ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\..";
+                    if (Directory.Exists(path))
+                        Directory.Exists(path);
+                    else if (File.Exists(path))
+                        Process.Start(path);
+                    else
+                        MessageBox.Show(path);
+                    break;
+            }
         }
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -71,23 +115,33 @@ namespace RAMCommander
 
         private void FillTable(bool isFirst, string path)
         {
-            if (isFirst)
+            try
             {
-                FirstPanel.ItemsSource = null;
-                _firstDirectoryItem = new DirectoryItem(path, true);
-                _firstItems = new List<Item>(_firstDirectoryItem.Subs);
-                FirstPanelPath.Text = _firstDirectoryItem.FullName;
-                FirstPanel.ItemsSource = _firstItems;
-                FirstPanel.CurrentItem = FirstPanel.Items[0];
+                DirectoryItem testDirectoryItem = new DirectoryItem(path, true);
+                //fails here if no access to directory
+
+                if (isFirst)
+                {
+                    FirstPanel.ItemsSource = null;
+                    _firstDirectoryItem = new DirectoryItem(path, true);
+                    _firstItems = new List<Item>(_firstDirectoryItem.Subs);
+                    FirstPanelPath.Text = _firstDirectoryItem.FullName;
+                    FirstPanel.ItemsSource = _firstItems;
+                    FirstPanel.CurrentItem = FirstPanel.Items[0];
+                }
+                else
+                {
+                    SecondPanel.ItemsSource = null;
+                    _seconDirectoryItem = new DirectoryItem(path, true);
+                    _secondItems = new List<Item>(_seconDirectoryItem.Subs);
+                    SecondPanelPath.Text = _seconDirectoryItem.FullName;
+                    SecondPanel.ItemsSource = _secondItems;
+                    SecondPanel.CurrentItem = SecondPanel.Items[0];
+                }
             }
-            else
+            catch (Exception e)
             {
-                SecondPanel.ItemsSource = null;
-                _seconDirectoryItem = new DirectoryItem(path, true);
-                _secondItems = new List<Item>(_seconDirectoryItem.Subs);
-                SecondPanelPath.Text = _seconDirectoryItem.FullName;
-                SecondPanel.ItemsSource = _secondItems;
-                SecondPanel.CurrentItem = SecondPanel.Items[0];
+                MessageBox.Show(e.Message);
             }
         }
     }

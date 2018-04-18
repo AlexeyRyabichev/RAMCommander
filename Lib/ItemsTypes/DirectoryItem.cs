@@ -1,21 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Lib.Interfaces;
 
-namespace Lib
+namespace Lib.ItemsTypes
 {
-    public class DirectoryItem : Item
+    public class DirectoryItem : Item, IDirectoriesFunctions
     {
         private readonly DirectoryInfo _directoryInfo;
         public List<DirectoryItem> Directories;
         public List<FileItem> Files;
 
-        public DirectoryItem(string path, bool parseSubs) : this(new DirectoryInfo(path), parseSubs)
+        public DirectoryItem(string path, bool parseSubs = true) : this(new DirectoryInfo(path), parseSubs)
         {
         }
 
-        public DirectoryItem(DirectoryInfo directoryInfo, bool parseSubs)
+        public DirectoryItem(DirectoryInfo directoryInfo, bool parseSubs = true)
         {
-            TypeImageSource = @"C:\Users\alexe\OneDrive\Рабочий стол\RAMcommander\Res\folder48.png";
+            //TypeImageSource = @"C:\Users\alexe\OneDrive\Рабочий стол\RAMcommander\Res\folder48.png";
+            //TypeImageSource = Properties.Resources.folder48;
+            TypeImageSource = Path.GetFullPath("../../Resources/folder48.png");
             _directoryInfo = directoryInfo;
             Name = _directoryInfo.Name;
             FullName = _directoryInfo.FullName;

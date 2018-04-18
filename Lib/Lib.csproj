@@ -30,8 +30,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -40,12 +43,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BackItem.cs" />
-    <Compile Include="DirectoryItem.cs" />
-    <Compile Include="FileItem.cs" />
-    <Compile Include="IItem.cs" />
-    <Compile Include="Item.cs" />
+    <Compile Include="Interfaces\IDirectoriesFunctions.cs" />
+    <Compile Include="Interfaces\IFileFunctions.cs" />
+    <Compile Include="Interfaces\IFunctions.cs" />
+    <Compile Include="ItemsTypes\BackItem.cs" />
+    <Compile Include="ItemsTypes\DirectoryItem.cs" />
+    <Compile Include="ItemsTypes\FileItem.cs" />
+    <Compile Include="Interfaces\IItem.cs" />
+    <Compile Include="ItemsTypes\Item.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
