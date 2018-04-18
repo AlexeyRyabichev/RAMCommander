@@ -23,6 +23,7 @@ namespace Lib.ItemsTypes
             Name = _fileInfo.Name;
             FullName = _fileInfo.FullName;
             Type = FILE;
+            if (_fileInfo.Directory != null) PathToParent = _fileInfo.Directory.FullName;
             if (_fileInfo.Length >> 20 == 0)
                 if (_fileInfo.Length >> 10 == 0)
                     SizeItem = _fileInfo.Length + " bytes";

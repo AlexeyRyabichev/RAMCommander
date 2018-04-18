@@ -11,6 +11,7 @@ namespace Lib.Interfaces
         string DateModified { get; }
         string TypeImageSource { get; }
         string Type { get; }
+        string PathToParent { get; }
         List<Item> Subs { get; }
     }
 }

@@ -5,7 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Lib;
+using System.Windows.Media;
 using Lib.ItemsTypes;
 
 namespace RAMCommander
@@ -17,12 +17,15 @@ namespace RAMCommander
     {
         private DirectoryItem _firstDirectoryItem;
         private List<Item> _firstItems;
+        private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            #region Clickers
 
             FirstPanelPath.KeyDown += PathOnKeyDown;
             SecondPanelPath.KeyDown += PathOnKeyDown;
@@ -36,37 +39,116 @@ namespace RAMCommander
             FirstPanel.AllowDrop = true;
             SecondPanel.AllowDrop = true;
 
-            FirstPanel.MouseDown += PanelOnMouseDown;
-            SecondPanel.MouseDown += PanelOnMouseDown;
+            //TODO: Finish Drag'n'Drop
+            //FirstPanel.MouseDown += PanelOnMouseDown;
+            //SecondPanel.MouseDown += PanelOnMouseDown;
 
-            FirstPanel.Drop += PanelOnDrop;
-            SecondPanel.Drop += PanelOnDrop;
+            //FirstPanel.Drop += PanelOnDrop;
+            //SecondPanel.Drop += PanelOnDrop;
 
-            FillTable(true, @"C:\");
-            FillTable(false, @"C:\Users\alexe\OneDrive\Рабочий стол\HSE_Stuff\KDZ3_DiscreteMath");
+            #endregion
+
+            #region Menu
+
+            NewFileMenuItem.Click += (sender, args) => CreateNewFile();
+            NewFileFastKey.Click += (sender, args) => CreateNewFile();
+
+            NewFolderMenuItem.Click += (sender, args) => CreateNewFolder();
+            NewFolderFastKey.Click += (sender, args) => CreateNewFolder();
+
+            DeleteFileMenuItem.Click += (sender, args) => Delete();
+            DeleteFolderMenuItem.Click += (sender, args) => Delete();
+
+            DeleteFastKey.Click += (sender, args) => Delete();
+            RenameFastKey.Click += (sender, args) => Rename();
+
+            #endregion
+
+
+            FillTable(true, @"C:\Users\alexe\Desktop");
+            FillTable(false, @"C:\Users\alexe\Code\HSE_Stuff");
+            _isFirstFocused = true;
+            FirstPanel.BorderBrush = new SolidColorBrush(Colors.Red);
+        }
+
+        private void Rename()
+        {
+            DataGrid currentDataGrid = _isFirstFocused ? FirstPanel : SecondPanel;
+            Item currentItem = (Item)currentDataGrid.CurrentItem;
+            currentItem.Rename(currentItem.Name + "RENAMED");
+            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+        }
+
+        private void Delete()
+        {
+            DataGrid currentDataGrid = _isFirstFocused ? FirstPanel : SecondPanel;
+            Item currentItem = (Item) currentDataGrid.CurrentItem;
+            currentItem.Delete();
+            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+        }
+
+        private void CreateNewFolder()
+        {
+            DirectoryItem directoryItem = new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+            directoryItem.Create(directoryItem.FullName, "CreatedFolder", Item.DIRECTORY);
+            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+        }
+
+        private void CreateNewFile()
+        {
+            DirectoryItem directoryItem = new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+            directoryItem.Create(directoryItem.FullName, "CreatedFile.txt", Item.FILE);
+            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+        }
+
+        private void CheckDataGridFocus(DataGrid dataGrid)
+        {
+            _isFirstFocused = dataGrid.Name == FirstPanel.Name;
+            if (_isFirstFocused)
+            {
+                FirstPanel.BorderBrush = new SolidColorBrush(Colors.Red);
+                FirstPanel.BorderThickness = new Thickness(2);
+                SecondPanel.BorderBrush = new SolidColorBrush(Colors.Gray);
+                SecondPanel.BorderThickness = new Thickness(1);
+            }
+            else
+            {
+                SecondPanel.BorderBrush = new SolidColorBrush(Colors.Red);
+                SecondPanel.BorderThickness = new Thickness(2);
+                FirstPanel.BorderBrush = new SolidColorBrush(Colors.Gray);
+                FirstPanel.BorderThickness = new Thickness(1);
+            }
         }
 
         private void PanelOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
             DataGrid dataGrid = (DataGrid) sender;
 
+            CheckDataGridFocus(dataGrid);
+
             if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
-                DragDrop.DoDragDrop(dataGrid, ((Item)dataGrid.CurrentItem).FullName, DragDropEffects.Copy);
+                DragDrop.DoDragDrop(dataGrid, ((Item) dataGrid.CurrentItem).FullName, DragDropEffects.Copy);
         }
 
         private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
         {
+            DataGrid dataGrid = (DataGrid) sender;
+            CheckDataGridFocus(dataGrid);
+
             string path = (string) dragEventArgs.Data.GetData(DataFormats.StringFormat);
             Item currentItem = null;
             if (Directory.Exists(path))
                 currentItem = new DirectoryItem(path, false);
             else if (File.Exists(path))
                 currentItem = new FileItem(path);
-            if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid)sender).Name}");
+            if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid) sender).Name}");
         }
 
         private void PanelOnPreviewKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
+            DataGrid dataGrid = (DataGrid) sender;
+            CheckDataGridFocus(dataGrid);
+
             if (keyEventArgs.Key != Key.Enter && keyEventArgs.Key != Key.Back) return;
             switch (keyEventArgs.Key)
             {
@@ -88,6 +170,9 @@ namespace RAMCommander
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
+            DataGrid dataGrid = (DataGrid) sender;
+            CheckDataGridFocus(dataGrid);
+
             bool isFirst = ((DataGrid) sender).Name == "FirstPanel";
             string name = ((Item) ((DataGrid) sender).CurrentItem).Name;
             string path = (isFirst ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\" + name;
@@ -117,13 +202,13 @@ namespace RAMCommander
         {
             try
             {
-                DirectoryItem testDirectoryItem = new DirectoryItem(path, true);
+                DirectoryItem testDirectoryItem = new DirectoryItem(path);
                 //fails here if no access to directory
 
                 if (isFirst)
                 {
                     FirstPanel.ItemsSource = null;
-                    _firstDirectoryItem = new DirectoryItem(path, true);
+                    _firstDirectoryItem = new DirectoryItem(path);
                     _firstItems = new List<Item>(_firstDirectoryItem.Subs);
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
                     FirstPanel.ItemsSource = _firstItems;
@@ -132,7 +217,7 @@ namespace RAMCommander
                 else
                 {
                     SecondPanel.ItemsSource = null;
-                    _seconDirectoryItem = new DirectoryItem(path, true);
+                    _seconDirectoryItem = new DirectoryItem(path);
                     _secondItems = new List<Item>(_seconDirectoryItem.Subs);
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
                     SecondPanel.ItemsSource = _secondItems;

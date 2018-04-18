@@ -11,8 +11,9 @@ namespace Lib.ItemsTypes
         public static string FILE = "File";
         public static string BACK = "Back";
 
-        public void Copy(Item item, string newPathToParent)
+        public void Copy(string newPathToParent)
         {
+            Item item = this;
             if (item is FileItem)
                 if (Directory.Exists(newPathToParent) && File.Exists(item.FullName))
                     if (File.Exists(Path.Combine(newPathToParent, item.Name)))
@@ -32,8 +33,9 @@ namespace Lib.ItemsTypes
                     MessageBox.Show("Directory don't exists");
         }
 
-        public void Move(Item item, string newPathToParent)
+        public void Move(string newPathToParent)
         {
+            Item item = this;
             if (item is FileItem)
                 if (Directory.Exists(newPathToParent) && File.Exists(item.FullName))
                     if (File.Exists(Path.Combine(newPathToParent, item.Name)))
@@ -52,8 +54,9 @@ namespace Lib.ItemsTypes
                     MessageBox.Show("Directory don't exists");
         }
 
-        public void Delete(Item item)
+        public void Delete()
         {
+            Item item = this;
             if (item is FileItem)
                 if (File.Exists(item.FullName))
                     File.Delete(item.FullName);
@@ -62,6 +65,27 @@ namespace Lib.ItemsTypes
             else if (item is DirectoryItem)
                 if (Directory.Exists(item.FullName))
                     Directory.Delete(item.FullName);
+                else
+                    MessageBox.Show("Directory don't exists");
+        }
+
+        public void Rename(string newName)
+        {
+            Item item = this;
+            if (item is FileItem)
+                if (File.Exists(item.FullName))
+                    if (File.Exists(Path.Combine(PathToParent, newName)))
+                        MessageBox.Show("File already exists");
+                    else
+                        File.Move(item.FullName, Path.Combine(PathToParent, newName));
+                else
+                    MessageBox.Show("File don't exists");
+            else if (item is DirectoryItem)
+                if (Directory.Exists(item.FullName))
+                    if (Directory.Exists(Path.Combine(PathToParent, newName)))
+                        MessageBox.Show("Directory already exists");
+                    else
+                        Directory.Move(item.FullName, Path.Combine(PathToParent, newName));
                 else
                     MessageBox.Show("Directory don't exists");
         }
@@ -92,6 +116,7 @@ namespace Lib.ItemsTypes
         public string DateModified { get; protected set; }
         public string TypeImageSource { get; protected set; }
         public string Type { get; protected set; }
+        public string PathToParent { get; protected set; }
         public List<Item> Subs { get; protected set; }
     }
 }

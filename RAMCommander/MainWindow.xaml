@@ -19,24 +19,20 @@
 
         <Menu Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0">
             <MenuItem Header="File">
-                <MenuItem Header="New" />
-                <MenuItem Header="Rename" />
-                <MenuItem Header="Delete" />
+                <MenuItem Header="New" Name="NewFileMenuItem"/>
+                <MenuItem Header="Delete" Name="DeleteFileMenuItem"/>
             </MenuItem>
             <MenuItem Header="Folder">
-                <MenuItem Header="New" />
-                <MenuItem Header="Rename" />
-                <MenuItem Header="Delete" />
+                <MenuItem Header="New" Name="NewFolderMenuItem"/>
+                <MenuItem Header="Delete" Name="DeleteFolderMenuItem"/>
             </MenuItem>
         </Menu>
 
         <Menu Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
-            <MenuItem Header="New file" />
-            <MenuItem Header="New folder" />
-            <MenuItem Header="Rename file" />
-            <MenuItem Header="Rename folder" />
-            <MenuItem Header="Delete file" />
-            <MenuItem Header="Delete folder" />
+            <MenuItem Header="New file" Name="NewFileFastKey"/>
+            <MenuItem Header="New folder" Name="NewFolderFastKey"/>
+            <MenuItem Header="Rename" Name="RenameFastKey"/>
+            <MenuItem Header="Delete" Name="DeleteFastKey"/>
         </Menu>
 
         <Grid Grid.Row="2" Column="0">
@@ -70,8 +66,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" />
-                    <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" Width="*" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" MaxWidth="300" />
+                    <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" />
                     <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}" Width="*" />
                 </DataGrid.Columns>
             </DataGrid>
