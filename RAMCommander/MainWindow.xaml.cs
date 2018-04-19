@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Lib.ItemsTypes;
+using RAMCommander.Windows;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
 
 namespace RAMCommander
 {
@@ -20,32 +24,54 @@ namespace RAMCommander
         private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
+        private readonly Style _focusedStyle;
+        private readonly Style _standardStyle;
 
         public MainWindow()
         {
+            //TODO: Previewers
+            //TODO: Coloring
             InitializeComponent();
 
+            _focusedStyle = new Style(typeof(Control));
+            _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e8ef"))));
+            //TODO: Change font to bold
+
+            _standardStyle = new Style(typeof(Control));
+            _standardStyle.Setters.Add(new Setter(BackgroundProperty,
+                new SolidColorBrush(Colors.White)));
+
+            FirstPanel.ItemsSource = new DirectoryItem("C:\\").Subs;
+            SecondPanel.ItemsSource = new DirectoryItem("C:\\Users").Subs;
+            
             #region Clickers
 
             FirstPanelPath.KeyDown += PathOnKeyDown;
             SecondPanelPath.KeyDown += PathOnKeyDown;
 
+
             FirstPanel.MouseDoubleClick += PanelOnMouseDoubleClick;
             SecondPanel.MouseDoubleClick += PanelOnMouseDoubleClick;
 
-            FirstPanel.PreviewKeyDown += PanelOnPreviewKeyDown;
-            SecondPanel.PreviewKeyDown += PanelOnPreviewKeyDown;
+            FirstPanel.KeyDown += PanelOnKeyDown;
+            SecondPanel.KeyDown += PanelOnKeyDown;
+
+            #endregion
+
+            #region Drag'n'Drop
+            //TODO: Finish Drag'n'Drop
 
             FirstPanel.AllowDrop = true;
             SecondPanel.AllowDrop = true;
-
-            //TODO: Finish Drag'n'Drop
             //FirstPanel.MouseDown += PanelOnMouseDown;
             //SecondPanel.MouseDown += PanelOnMouseDown;
 
-            //FirstPanel.Drop += PanelOnDrop;
-            //SecondPanel.Drop += PanelOnDrop;
+            //FirstPanel.PreviewMouseDown += PanelOnMouseDown;
+            //SecondPanel.PreviewMouseDown += PanelOnMouseDown;
 
+            //FirstPanel.Drop += PanelOnDrop;
+            //SecondPanel.Drop += PanelOnDrop; 
             #endregion
 
             #region Menu
@@ -60,121 +86,155 @@ namespace RAMCommander
             DeleteFolderMenuItem.Click += (sender, args) => Delete();
 
             DeleteFastKey.Click += (sender, args) => Delete();
-            RenameFastKey.Click += (sender, args) => Rename();
+            RenameFastKey.Click += (sender, args) => Rename((Item) (_isFirstFocused ? FirstPanel.SelectedItem : SecondPanel.SelectedItem), _isFirstFocused);
 
             #endregion
 
+            CopyPreview.Click += CopyPreviewOnClick;
 
             FillTable(true, @"C:\Users\alexe\Desktop");
             FillTable(false, @"C:\Users\alexe\Code\HSE_Stuff");
             _isFirstFocused = true;
-            FirstPanel.BorderBrush = new SolidColorBrush(Colors.Red);
+            CheckPanelFocus();
+            FirstPanel.Focus();
         }
 
-        private void Rename()
+        private void PanelOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
-            DataGrid currentDataGrid = _isFirstFocused ? FirstPanel : SecondPanel;
-            Item currentItem = (Item)currentDataGrid.CurrentItem;
-            currentItem.Rename(currentItem.Name + "RENAMED");
-            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+            bool flag = false;
+            Item item = null;
+            try
+            {
+                item = (Item) ((ListViewItem) keyEventArgs.OriginalSource).Content;
+                //fails here if any error
+                //flag = true;
+            }
+            catch (Exception)
+            {
+                ChangeFocus();
+            }
+            
+            //if (!flag)
+            //    return;
+
+            CheckPanelFocus();
+
+
+            switch (keyEventArgs.Key)
+            {
+                case Key.Back:
+                    string path = (_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\..";
+                    if (Directory.Exists(path))
+                        FillTable(_isFirstFocused, path);
+                    else
+                        MessageBox.Show("Can't go to parent folder");
+                    break;
+                case Key.Enter:
+                    PanelOnMouseDoubleClick(sender, null);
+                    break;
+                case Key.Right:
+                    ChangeFocus();
+                    break;
+                case Key.Left:
+                    ChangeFocus();
+                    break;
+                case Key.F2:
+                    Rename(item, _isFirstFocused);
+                    break;
+            }
+        }
+
+        private void CopyPreviewOnClick(object o, RoutedEventArgs routedEventArgs)
+        {
+            OperationWindow operationWindow = new OperationWindow("Copying");
+            operationWindow.Show();
+
+            operationWindow.CurrentItemProgress = 50;
+            operationWindow.TotalProgress = 25;
+        }
+
+        private void Rename(Item item, bool isFirst)
+        {
+            MessageBox.Show(isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
+            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename: ", item.Name);
+            if (chooseNameWindow.ShowDialog() == true)
+            {
+                item.Rename(chooseNameWindow.NewName);
+                MessageBox.Show(isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
+                FillTable(isFirst, isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
+            }
         }
 
         private void Delete()
         {
-            DataGrid currentDataGrid = _isFirstFocused ? FirstPanel : SecondPanel;
-            Item currentItem = (Item) currentDataGrid.CurrentItem;
+            ListView currentListView = _isFirstFocused ? FirstPanel : SecondPanel;
+            Item currentItem = (Item)currentListView.SelectedItem;
             currentItem.Delete();
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
         private void CreateNewFolder()
         {
-            DirectoryItem directoryItem = new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+            DirectoryItem directoryItem =
+                new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
             directoryItem.Create(directoryItem.FullName, "CreatedFolder", Item.DIRECTORY);
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
         private void CreateNewFile()
         {
-            DirectoryItem directoryItem = new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+            DirectoryItem directoryItem =
+                new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
             directoryItem.Create(directoryItem.FullName, "CreatedFile.txt", Item.FILE);
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
-        private void CheckDataGridFocus(DataGrid dataGrid)
+        private void CheckPanelFocus()
         {
-            _isFirstFocused = dataGrid.Name == FirstPanel.Name;
             if (_isFirstFocused)
             {
-                FirstPanel.BorderBrush = new SolidColorBrush(Colors.Red);
-                FirstPanel.BorderThickness = new Thickness(2);
-                SecondPanel.BorderBrush = new SolidColorBrush(Colors.Gray);
-                SecondPanel.BorderThickness = new Thickness(1);
+                FirstGridView.ColumnHeaderContainerStyle = _focusedStyle;
+                SecondGridView.ColumnHeaderContainerStyle = _standardStyle;
             }
             else
             {
-                SecondPanel.BorderBrush = new SolidColorBrush(Colors.Red);
-                SecondPanel.BorderThickness = new Thickness(2);
-                FirstPanel.BorderBrush = new SolidColorBrush(Colors.Gray);
-                FirstPanel.BorderThickness = new Thickness(1);
+                FirstGridView.ColumnHeaderContainerStyle = _standardStyle;
+                SecondGridView.ColumnHeaderContainerStyle = _focusedStyle;
             }
         }
 
         private void PanelOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            DataGrid dataGrid = (DataGrid) sender;
+            ListView listView = (ListView)sender;
 
-            CheckDataGridFocus(dataGrid);
 
-            if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
-                DragDrop.DoDragDrop(dataGrid, ((Item) dataGrid.CurrentItem).FullName, DragDropEffects.Copy);
+            CheckPanelFocus();
+
+            //if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
+            //    DragDrop.DoDragDrop(listView, ((Item)listView.SelectedItem).FullName, DragDropEffects.Copy);
         }
 
-        private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
-        {
-            DataGrid dataGrid = (DataGrid) sender;
-            CheckDataGridFocus(dataGrid);
+        //private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
+        //{
+        //    DataGrid dataGrid = (DataGrid) sender;
+        //    CheckPanelFocus(dataGrid);
 
-            string path = (string) dragEventArgs.Data.GetData(DataFormats.StringFormat);
-            Item currentItem = null;
-            if (Directory.Exists(path))
-                currentItem = new DirectoryItem(path, false);
-            else if (File.Exists(path))
-                currentItem = new FileItem(path);
-            if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid) sender).Name}");
-        }
-
-        private void PanelOnPreviewKeyDown(object sender, KeyEventArgs keyEventArgs)
-        {
-            DataGrid dataGrid = (DataGrid) sender;
-            CheckDataGridFocus(dataGrid);
-
-            if (keyEventArgs.Key != Key.Enter && keyEventArgs.Key != Key.Back) return;
-            switch (keyEventArgs.Key)
-            {
-                case Key.Enter:
-                    PanelOnMouseDoubleClick(sender, null);
-                    break;
-                case Key.Back:
-                    bool isFirst = ((DataGrid) sender).Name == "FirstPanel";
-                    string path = (isFirst ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\..";
-                    if (Directory.Exists(path))
-                        Directory.Exists(path);
-                    else if (File.Exists(path))
-                        Process.Start(path);
-                    else
-                        MessageBox.Show(path);
-                    break;
-            }
-        }
+        //    string path = (string) dragEventArgs.Data.GetData(DataFormats.StringFormat);
+        //    Item currentItem = null;
+        //    if (Directory.Exists(path))
+        //        currentItem = new DirectoryItem(path, false);
+        //    else if (File.Exists(path))
+        //        currentItem = new FileItem(path);
+        //    if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid) sender).Name}");
+        //}
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            DataGrid dataGrid = (DataGrid) sender;
-            CheckDataGridFocus(dataGrid);
+            ListView listView = (ListView)sender;
+            CheckPanelFocus();
 
-            bool isFirst = ((DataGrid) sender).Name == "FirstPanel";
-            string name = ((Item) ((DataGrid) sender).CurrentItem).Name;
+            bool isFirst = ((ListView)sender).Name == "FirstPanel";
+            string name = ((Item)((ListView)sender).SelectedItem).Name;
             string path = (isFirst ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\" + name;
 
             if (Directory.Exists(path))
@@ -189,13 +249,29 @@ namespace RAMCommander
         {
             if (keyEventArgs.Key != Key.Enter) return;
 
-            string name = ((TextBox) sender).Name;
-            string path = ((TextBox) sender).Text;
+            string name = ((TextBox)sender).Name;
+            string path = ((TextBox)sender).Text;
 
             if (Directory.Exists(path))
                 FillTable(name == "FirstPanelPath", path);
             else
                 MessageBox.Show($"Directory {path} don't exists");
+        }
+
+        private void ChangeFocus()
+        {
+            if (_isFirstFocused)
+            {
+                ((ListViewItem) SecondPanel.ItemContainerGenerator.ContainerFromIndex(0)).Focus();
+                FirstPanel.SelectedItem = null;
+            }
+            else
+            {
+                ((ListViewItem)FirstPanel.ItemContainerGenerator.ContainerFromIndex(0)).Focus();
+                SecondPanel.SelectedItem = null;
+            }
+            _isFirstFocused = !_isFirstFocused;
+            CheckPanelFocus();
         }
 
         private void FillTable(bool isFirst, string path)
@@ -212,7 +288,6 @@ namespace RAMCommander
                     _firstItems = new List<Item>(_firstDirectoryItem.Subs);
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
                     FirstPanel.ItemsSource = _firstItems;
-                    FirstPanel.CurrentItem = FirstPanel.Items[0];
                 }
                 else
                 {
@@ -221,7 +296,6 @@ namespace RAMCommander
                     _secondItems = new List<Item>(_seconDirectoryItem.Subs);
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
                     SecondPanel.ItemsSource = _secondItems;
-                    SecondPanel.CurrentItem = SecondPanel.Items[0];
                 }
             }
             catch (Exception e)

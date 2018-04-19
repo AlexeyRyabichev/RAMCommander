@@ -19,20 +19,21 @@
 
         <Menu Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0">
             <MenuItem Header="File">
-                <MenuItem Header="New" Name="NewFileMenuItem"/>
-                <MenuItem Header="Delete" Name="DeleteFileMenuItem"/>
+                <MenuItem Header="New" Name="NewFileMenuItem" />
+                <MenuItem Header="Delete" Name="DeleteFileMenuItem" />
             </MenuItem>
             <MenuItem Header="Folder">
-                <MenuItem Header="New" Name="NewFolderMenuItem"/>
-                <MenuItem Header="Delete" Name="DeleteFolderMenuItem"/>
+                <MenuItem Header="New" Name="NewFolderMenuItem" />
+                <MenuItem Header="Delete" Name="DeleteFolderMenuItem" />
             </MenuItem>
         </Menu>
 
         <Menu Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
-            <MenuItem Header="New file" Name="NewFileFastKey"/>
-            <MenuItem Header="New folder" Name="NewFolderFastKey"/>
-            <MenuItem Header="Rename" Name="RenameFastKey"/>
-            <MenuItem Header="Delete" Name="DeleteFastKey"/>
+            <MenuItem Header="New file" Name="NewFileFastKey" />
+            <MenuItem Header="New folder" Name="NewFolderFastKey" />
+            <MenuItem Header="Rename" Name="RenameFastKey" />
+            <MenuItem Header="Delete" Name="DeleteFastKey" />
+            <MenuItem Header="Copy Preview" Name="CopyPreview" />
         </Menu>
 
         <Grid Grid.Row="2" Column="0">
@@ -49,20 +50,47 @@
             <TextBox Grid.Column="0" Grid.Row="0" Name="FirstPanelPath" />
             <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Name="FirstPanelButton" />
-
-            <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel" AutoGenerateColumns="False"
+            <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel">
+                <ListView.View>
+                    <GridView x:Name="FirstGridView" AllowsColumnReorder="False">
+                        <GridView.Columns>
+                            <GridViewColumn>
+                                <CheckBox></CheckBox>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox></CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Name" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
+                                                   VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
+                                            <TextBlock Text="{Binding Name}"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Header="Size" Width="80"></GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Header="Date modified" Width="150"></GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <!--<DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel" AutoGenerateColumns="False"
                       GridLinesVisibility="None" HorizontalGridLinesBrush="Gray" IsReadOnly="True"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="True"
                       HeadersVisibility="Column">
                 <DataGrid.Columns>
-                    <!--<DataGridCheckBoxColumn  CellStyle="{StaticResource DataGridItemCenter}"/>-->
+                    --><!--<DataGridCheckBoxColumn  CellStyle="{StaticResource DataGridItemCenter}"/>--><!--
                     <DataGridTemplateColumn Header="">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                       VerticalAlignment="Center" Width="20px" Height="20px">
-                                </Image>
+                                       VerticalAlignment="Center" Width="20px" Height="20px" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -70,9 +98,9 @@
                     <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" />
                     <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}" Width="*" />
                 </DataGrid.Columns>
-            </DataGrid>
+            </DataGrid>-->
 
-            <TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
         </Grid>
 
 
@@ -91,14 +119,43 @@
             <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Name="SecondPanelButton" />
 
-            <DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel" AutoGenerateColumns="False"
+            <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel">
+                <ListView.View>
+                    <GridView x:Name="SecondGridView">
+                        <GridView.Columns>
+                            <GridViewColumn>
+                                <CheckBox></CheckBox>
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox></CheckBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Name" Width="200">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
+                                                   VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
+                                            <TextBlock Text="{Binding Name}"></TextBlock>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Header="Size" Width="80"></GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Header="Date modified" Width="150"></GridViewColumn>
+                        </GridView.Columns>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <!--<DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel" AutoGenerateColumns="False"
                       GridLinesVisibility="None" HorizontalGridLinesBrush="Gray" IsReadOnly="True"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="True"
                       HeadersVisibility="Column">
                 <DataGrid.Columns>
-                    <!--<DataGridCheckBoxColumn CellStyle="{StaticResource DataGridItemCenter}"
-                                            Binding="{Binding IsChecked}" />-->
+                    --><!--<DataGridCheckBoxColumn CellStyle="{StaticResource DataGridItemCenter}"
+                                            Binding="{Binding IsChecked}" />--><!--
                     <DataGridTemplateColumn Header="">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -111,9 +168,9 @@
                     <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" />
                     <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}" Width="*" />
                 </DataGrid.Columns>
-            </DataGrid>
+            </DataGrid>-->
 
-            <TextBox Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
         </Grid>
     </Grid>
 </Window>

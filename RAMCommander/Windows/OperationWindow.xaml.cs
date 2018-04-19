@@ -8,14 +8,16 @@ namespace RAMCommander.Windows
     public partial class OperationWindow : Window
     {
         private const string CURRENTOPERATION = "Current operation: ";
-        private int _totalProgress;
         private int _currentItemProgress;
+        private int _totalProgress;
 
         public OperationWindow(string operationName)
         {
             InitializeComponent();
 
             CurrentOperationText.Text = CURRENTOPERATION + operationName;
+            TotalProgressText.Text = "Total progress";
+            CurrentItemProgressText.Text = "Current Item progress";
 
             TotalProgressBar.Minimum = 0;
             TotalProgressBar.Maximum = 100;

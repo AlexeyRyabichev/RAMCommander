@@ -1,6 +1,4 @@
-﻿using Lib.ItemsTypes;
-
-namespace Lib.Interfaces
+﻿namespace Lib.Interfaces
 {
     public interface IFunctions
     {
