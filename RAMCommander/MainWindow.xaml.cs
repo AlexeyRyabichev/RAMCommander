@@ -155,12 +155,10 @@ namespace RAMCommander
 
         private void Rename(Item item, bool isFirst)
         {
-            MessageBox.Show(isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
             ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename: ", item.Name);
             if (chooseNameWindow.ShowDialog() == true)
             {
                 item.Rename(chooseNameWindow.NewName);
-                MessageBox.Show(isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
                 FillTable(isFirst, isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
             }
         }
