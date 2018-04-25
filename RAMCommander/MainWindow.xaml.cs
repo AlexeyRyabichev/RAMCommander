@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,8 +9,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Lib.ItemsTypes;
 using RAMCommander.Windows;
-using Color = System.Windows.Media.Color;
-using ColorConverter = System.Windows.Media.ColorConverter;
 
 namespace RAMCommander
 {
@@ -19,13 +17,13 @@ namespace RAMCommander
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly Style _focusedStyle;
+        private readonly Style _standardStyle;
         private DirectoryItem _firstDirectoryItem;
         private List<Item> _firstItems;
         private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
-        private readonly Style _focusedStyle;
-        private readonly Style _standardStyle;
 
         public MainWindow()
         {
@@ -46,13 +44,13 @@ namespace RAMCommander
 
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#BBDEFB")))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString("#BBDEFB")))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
             _standardStyle.Setters.Add(new Setter(BackgroundProperty,
                 new SolidColorBrush(Colors.White)));
-            
+
             #region Clickers
 
             FirstPanelPath.KeyDown += PathOnKeyDown;
@@ -67,6 +65,7 @@ namespace RAMCommander
             #endregion
 
             #region Drag'n'Drop
+
             //TODO: Finish Drag'n'Drop
 
             FirstPanel.AllowDrop = true;
@@ -77,6 +76,7 @@ namespace RAMCommander
 
             FirstPanel.Drop += PanelOnDrop;
             SecondPanel.Drop += PanelOnDrop;
+
             #endregion
 
             #region Menu
@@ -91,7 +91,8 @@ namespace RAMCommander
             DeleteFolderMenuItem.Click += (sender, args) => Delete();
 
             DeleteFastKey.Click += (sender, args) => Delete();
-            RenameFastKey.Click += (sender, args) => Rename((Item) (_isFirstFocused ? FirstPanel.SelectedItem : SecondPanel.SelectedItem), _isFirstFocused);
+            RenameFastKey.Click += (sender, args) =>
+                Rename((Item) (_isFirstFocused ? FirstPanel.SelectedItem : SecondPanel.SelectedItem), _isFirstFocused);
 
             #endregion
 
@@ -118,7 +119,7 @@ namespace RAMCommander
             {
                 ChangeFocus();
             }
-            
+
             //if (!flag)
             //    return;
 
@@ -171,7 +172,7 @@ namespace RAMCommander
         private void Delete()
         {
             ListView currentListView = _isFirstFocused ? FirstPanel : SecondPanel;
-            Item currentItem = (Item)currentListView.SelectedItem;
+            Item currentItem = (Item) currentListView.SelectedItem;
             currentItem.Delete();
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
@@ -211,7 +212,6 @@ namespace RAMCommander
             ListView listView = (ListView) sender;
             _isFirstFocused = listView.Name == FirstPanel.Name;
             CheckPanelFocus();
-            
 
 
             //if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed && mouseButtonEventArgs.ClickCount == 1)
@@ -234,11 +234,11 @@ namespace RAMCommander
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            ListView listView = (ListView)sender;
+            ListView listView = (ListView) sender;
             CheckPanelFocus();
 
-            bool isFirst = ((ListView)sender).Name == "FirstPanel";
-            string name = ((Item)((ListView)sender).SelectedItem).Name;
+            bool isFirst = ((ListView) sender).Name == "FirstPanel";
+            string name = ((Item) ((ListView) sender).SelectedItem).Name;
             string path = (isFirst ? FirstPanelPath.Text : SecondPanelPath.Text) + @"\" + name;
 
             if (Directory.Exists(path))
@@ -253,8 +253,8 @@ namespace RAMCommander
         {
             if (keyEventArgs.Key != Key.Enter) return;
 
-            string name = ((TextBox)sender).Name;
-            string path = ((TextBox)sender).Text;
+            string name = ((TextBox) sender).Name;
+            string path = ((TextBox) sender).Text;
 
             if (Directory.Exists(path))
                 FillTable(name == "FirstPanelPath", path);
@@ -271,9 +271,10 @@ namespace RAMCommander
             }
             else
             {
-                ((ListViewItem)FirstPanel.ItemContainerGenerator.ContainerFromIndex(0)).Focus();
+                ((ListViewItem) FirstPanel.ItemContainerGenerator.ContainerFromIndex(0)).Focus();
                 SecondPanel.SelectedItem = null;
             }
+
             _isFirstFocused = !_isFirstFocused;
             CheckPanelFocus();
         }
@@ -319,10 +320,11 @@ namespace RAMCommander
         private void CheckBoxTemplate_OnClick(object sender, RoutedEventArgs e)
         {
             CheckBox checkBox = (CheckBox) sender;
-            ListViewItem listViewItem = (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
-                int.Parse(checkBox.Uid));
+            ListViewItem listViewItem =
+                (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
+                    int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
-                listViewItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B2EBF2"));
+                listViewItem.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#B2EBF2"));
             else
                 listViewItem.Background = new SolidColorBrush(Colors.White);
         }
@@ -330,6 +332,31 @@ namespace RAMCommander
         private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
         {
             //if 
+        }
+
+        private void ColumnSort(object sender, RoutedEventArgs e)
+        {
+            string header = ((GridViewColumnHeader) sender).Content.ToString();
+
+            if (header == "Date modified")
+                header = "DateModified";
+            if (header == "Type")
+                header = "Extension";
+
+            SortDescription desc = new SortDescription(header, ListSortDirection.Descending);
+            SortDescription asc = new SortDescription(header, ListSortDirection.Ascending);
+
+            if ((_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Contains(desc))
+            {
+                (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Clear();
+                (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Add(asc);
+            }
+            else
+            {
+                (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Clear();
+                (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Add(desc);
+            }
+            
         }
     }
 }

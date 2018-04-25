@@ -152,13 +152,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RAMCommander_TemporaryKey.pfx" />
-    <None Include="Resources\back48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\file48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\folder48.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -171,6 +164,75 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\audio48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\back48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\doc48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\jpg48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pdf48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\png48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\psd48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\txt48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\video48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\xls48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\7z48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\rar48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\zip48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\raw48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\css48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\html48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\c++48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\csharp48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exe48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cpp48.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

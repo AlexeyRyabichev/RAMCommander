@@ -55,58 +55,46 @@
                     <GridView x:Name="FirstGridView" AllowsColumnReorder="False">
                         <GridView.Columns>
                             <GridViewColumn>
-                                <CheckBox></CheckBox>
+                                <CheckBox />
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}" Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}"></CheckBox>
+                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}"
+                                                  Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Name" Width="200">
+                            <GridViewColumn Width="200">
+                                <GridViewColumnHeader Click="ColumnSort">Name</GridViewColumnHeader>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" ToolTipService.ShowDuration="10000">
                                             <StackPanel.ToolTip>
                                                 <StackPanel MaxHeight="500" MaxWidth="500">
-                                                    <MediaElement Source="{Binding FullName}"></MediaElement>
-                                                    <Image Source="{Binding FullName}"></Image>
-                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                    <MediaElement Source="{Binding FullName}" />
+                                                    <TextBlock Text="{Binding Name}" />
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
-                                            <TextBlock Text="{Binding Name}"></TextBlock>
+                                                   VerticalAlignment="Center" Width="20px" Height="20px"
+                                                   Margin="0, 0, 10, 0" />
+                                            <TextBlock Text="{Binding Name}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Header="Size" Width="80"></GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Header="Date modified" Width="150"></GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Extension}" Width="50">
+                                <GridViewColumnHeader Click="ColumnSort">Type</GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Width="80">
+                                <GridViewColumnHeader Click="ColumnSort">Size</GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Width="150">
+                                <GridViewColumnHeader Click="ColumnSort">Date modified</GridViewColumnHeader>
+                            </GridViewColumn>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
             </ListView>
-            <!--<DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel" AutoGenerateColumns="False"
-                      GridLinesVisibility="None" HorizontalGridLinesBrush="Gray" IsReadOnly="True"
-                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
-                      CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="True"
-                      HeadersVisibility="Column">
-                <DataGrid.Columns>
-                    --><!--<DataGridCheckBoxColumn  CellStyle="{StaticResource DataGridItemCenter}"/>--><!--
-                    <DataGridTemplateColumn Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                       VerticalAlignment="Center" Width="20px" Height="20px" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" MaxWidth="300" />
-                    <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" />
-                    <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>-->
-
             <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
         </Grid>
 
@@ -128,60 +116,49 @@
 
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel">
                 <ListView.View>
-                    <GridView x:Name="SecondGridView">
+                    <GridView x:Name="SecondGridView" AllowsColumnReorder="False">
                         <GridView.Columns>
                             <GridViewColumn>
-                                <CheckBox></CheckBox>
+                                <CheckBox />
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}" Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}"></CheckBox>
+                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}"
+                                                  Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}" />
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn Header="Name" Width="200">
+                            <GridViewColumn Width="200">
+                                <GridViewColumnHeader Click="ColumnSort">Name</GridViewColumnHeader>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
+                                        <StackPanel Orientation="Horizontal" ToolTipService.ShowDuration="10000">
                                             <StackPanel.ToolTip>
                                                 <StackPanel MaxHeight="500" MaxWidth="500">
-                                                    <Image Source="{Binding FullName}"></Image>
-                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                    <MediaElement Source="{Binding FullName}" />
+                                                    <TextBlock Text="{Binding Name}" />
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
-                                            <TextBlock Text="{Binding Name}"></TextBlock>
+                                                   VerticalAlignment="Center" Width="20px" Height="20px"
+                                                   Margin="0, 0, 10, 0" />
+                                            <TextBlock Text="{Binding Name}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Header="Size" Width="80"></GridViewColumn>
-                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Header="Date modified" Width="150"></GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding Extension}" Width="50">
+                                <GridViewColumnHeader Click="ColumnSort">Type</GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding SizeItem}" Width="80">
+                                <GridViewColumnHeader Click="ColumnSort">Size</GridViewColumnHeader>
+                            </GridViewColumn>
+                            <GridViewColumn DisplayMemberBinding="{Binding DateModified}" Width="150">
+                                <GridViewColumnHeader Click="ColumnSort">Date modified</GridViewColumnHeader>
+                            </GridViewColumn>
                         </GridView.Columns>
                     </GridView>
                 </ListView.View>
             </ListView>
-            <!--<DataGrid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel" AutoGenerateColumns="False"
-                      GridLinesVisibility="None" HorizontalGridLinesBrush="Gray" IsReadOnly="True"
-                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
-                      CanUserResizeColumns="False" CanUserResizeRows="False" CanUserSortColumns="True"
-                      HeadersVisibility="Column">
-                <DataGrid.Columns>
-                    --><!--<DataGridCheckBoxColumn CellStyle="{StaticResource DataGridItemCenter}"
-                                            Binding="{Binding IsChecked}" />--><!--
-                    <DataGridTemplateColumn Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Image Source="{Binding TypeImageSource}" HorizontalAlignment="Center"
-                                       VerticalAlignment="Center" Width="20px" Height="20px" />
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" MaxWidth="300" />
-                    <DataGridTextColumn Header="Size" Binding="{Binding SizeItem}" />
-                    <DataGridTextColumn Header="Date modified" Binding="{Binding DateModified}" Width="*" />
-                </DataGrid.Columns>
-            </DataGrid>-->
 
             <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
         </Grid>

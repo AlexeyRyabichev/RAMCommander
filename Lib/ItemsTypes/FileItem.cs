@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows;
 using Lib.Interfaces;
 
 namespace Lib.ItemsTypes
@@ -15,10 +16,74 @@ namespace Lib.ItemsTypes
         {
             //TypeImageSource = @"Resources\file48.png";
             //TypeImageSource = Properties.Resources.file48;
-
-            TypeImageSource = Path.GetFullPath("../../Resources/file48.png");
+            switch (fileInfo.Extension)
+            {
+                case ".raw":
+                    TypeImageSource = Path.GetFullPath("../../Resources/raw48.png");
+                    break;
+                case ".css":
+                    TypeImageSource = Path.GetFullPath("../../Resources/css48.png");
+                    break;
+                case ".html":
+                    TypeImageSource = Path.GetFullPath("../../Resources/html48.png");
+                    break;
+                case ".c":
+                    TypeImageSource = Path.GetFullPath("../../Resources/c48.png");
+                    break;
+                case ".cpp":
+                    TypeImageSource = Path.GetFullPath("../../Resources/cpp48.png");
+                    break;
+                case ".cs":
+                    TypeImageSource = Path.GetFullPath("../../Resources/csharp48.png");
+                    break;
+                case ".exe":
+                    TypeImageSource = Path.GetFullPath("../../Resources/exe48.png");
+                    break;
+                case ".7z":
+                    TypeImageSource = Path.GetFullPath("../../Resources/7z48.png");
+                    break;
+                case ".zip":
+                    TypeImageSource = Path.GetFullPath("../../Resources/zip48.png");
+                    break;
+                case ".rar":
+                    TypeImageSource = Path.GetFullPath("../../Resources/rar48.png");
+                    break;
+                case ".xls":
+                    TypeImageSource = Path.GetFullPath("../../Resources/xls48.png");
+                    break;
+                case ".psd":
+                    TypeImageSource = Path.GetFullPath("../../Resources/psd48.png");
+                    break;
+                case ".png":
+                    TypeImageSource = Path.GetFullPath("../../Resources/png48.png");
+                    break;
+                case ".jpg":
+                    TypeImageSource = Path.GetFullPath("../../Resources/jpg48.png");
+                    break;
+                case ".doc":
+                    TypeImageSource = Path.GetFullPath("../../Resources/doc48.png");
+                    break;
+                case ".txt":
+                    TypeImageSource = Path.GetFullPath("../../Resources/txt48.png");
+                    break;
+                case ".mp3":
+                    TypeImageSource = Path.GetFullPath("../../Resources/audio48.png");
+                    break;
+                case ".mp4":
+                case ".mkv":
+                    TypeImageSource = Path.GetFullPath("../../Resources/video48.png");
+                    break;
+                case ".pdf":
+                    TypeImageSource = Path.GetFullPath("../../Resources/pdf48.png");
+                    break;
+                default:
+                    TypeImageSource = Path.GetFullPath("../../Resources/file48.png");
+                    break;
+            }
 
             _fileInfo = fileInfo;
+            Extension = _fileInfo.Extension.Replace(".", "");
+            Size = _fileInfo.Length;
             Name = _fileInfo.Name;
             FullName = _fileInfo.FullName;
             Type = FILE;

@@ -9,9 +9,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib", "Lib\Lib.csproj", "{3
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Res", "Res", "{3B6507BC-2242-43AA-B4A1-051C641B1B1F}"
 	ProjectSection(SolutionItems) = preProject
+		Res\7z48.png = Res\7z48.png
+		Res\audio48.png = Res\audio48.png
 		Res\back48.png = Res\back48.png
+		Res\c48.png = Res\c48.png
+		Res\cpp48.png = Res\cpp48.png
+		Res\csharp48.png = Res\csharp48.png
+		Res\css48.png = Res\css48.png
+		Res\doc48.png = Res\doc48.png
+		Res\exe48.png = Res\exe48.png
 		Res\file48.png = Res\file48.png
 		Res\folder48.png = Res\folder48.png
+		Res\html48.png = Res\html48.png
+		Res\jpg48.png = Res\jpg48.png
+		Res\pdf48.png = Res\pdf48.png
+		Res\png48.png = Res\png48.png
+		Res\psd48.png = Res\psd48.png
+		Res\rar48.png = Res\rar48.png
+		Res\raw48.png = Res\raw48.png
+		Res\txt48.png = Res\txt48.png
+		Res\video48.png = Res\video48.png
+		Res\xls48.png = Res\xls48.png
+		Res\zip48.png = Res\zip48.png
 	EndProjectSection
 EndProject
 Global

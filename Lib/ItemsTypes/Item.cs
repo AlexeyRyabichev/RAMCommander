@@ -117,6 +117,8 @@ namespace Lib.ItemsTypes
         public string TypeImageSource { get; protected set; }
         public string Type { get; protected set; }
         public string PathToParent { get; protected set; }
+        public string Extension { get; protected set; }
+        public long Size { get; protected set; }
         public bool IsChecked { get; set; }
         public int Index { get; set; }
         public List<Item> Subs { get; protected set; }

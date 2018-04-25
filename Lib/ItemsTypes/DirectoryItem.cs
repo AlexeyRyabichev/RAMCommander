@@ -24,6 +24,7 @@ namespace Lib.ItemsTypes
             FullName = _directoryInfo.FullName;
             Type = DIRECTORY;
             SizeItem = "";
+            Size = int.MaxValue;
             DateModified = _directoryInfo.LastWriteTimeUtc.ToString();
             if (directoryInfo.Parent != null) PathToParent = directoryInfo.Parent.FullName;
 
