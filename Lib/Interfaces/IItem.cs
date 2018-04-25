@@ -12,6 +12,8 @@ namespace Lib.Interfaces
         string TypeImageSource { get; }
         string Type { get; }
         string PathToParent { get; }
+        bool IsChecked { get; set; }
+        int Index { get; set; }
         List<Item> Subs { get; }
     }
 }

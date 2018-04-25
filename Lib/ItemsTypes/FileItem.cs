@@ -31,6 +31,7 @@ namespace Lib.ItemsTypes
             else
                 SizeItem = (_fileInfo.Length >> 20) + " Mb";
             DateModified = _fileInfo.LastWriteTimeUtc.ToString();
+            IsChecked = false;
         }
     }
 }

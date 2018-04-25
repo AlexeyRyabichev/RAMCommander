@@ -21,6 +21,7 @@ namespace Lib.ItemsTypes
             //TypeImageSource = @"C:\Users\alexe\Code\RAMCommander\Res\back48.png";
             TypeImageSource = Path.GetFullPath("../../Resources/back48.png");
             Name = @"\..";
+            IsChecked = false;
         }
     }
 }

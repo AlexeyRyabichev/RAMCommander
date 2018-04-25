@@ -33,23 +33,22 @@ namespace RAMCommander
             //TODO: Coloring
             InitializeComponent();
 
+            //FirstPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+            //SecondPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f9e8ef"))));
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString("#BBDEFB")))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
             _standardStyle.Setters.Add(new Setter(BackgroundProperty,
                 new SolidColorBrush(Colors.White)));
-
-            FirstPanel.ItemsSource = new DirectoryItem("C:\\").Subs;
-            SecondPanel.ItemsSource = new DirectoryItem("C:\\Users").Subs;
             
             #region Clickers
 
             FirstPanelPath.KeyDown += PathOnKeyDown;
             SecondPanelPath.KeyDown += PathOnKeyDown;
-
 
             FirstPanel.MouseDoubleClick += PanelOnMouseDoubleClick;
             SecondPanel.MouseDoubleClick += PanelOnMouseDoubleClick;
@@ -64,14 +63,12 @@ namespace RAMCommander
 
             FirstPanel.AllowDrop = true;
             SecondPanel.AllowDrop = true;
-            //FirstPanel.MouseDown += PanelOnMouseDown;
-            //SecondPanel.MouseDown += PanelOnMouseDown;
 
-            //FirstPanel.PreviewMouseDown += PanelOnMouseDown;
-            //SecondPanel.PreviewMouseDown += PanelOnMouseDown;
+            FirstPanel.PreviewMouseDown += PanelOnPreviewMouseDown;
+            SecondPanel.PreviewMouseDown += PanelOnPreviewMouseDown;
 
-            //FirstPanel.Drop += PanelOnDrop;
-            //SecondPanel.Drop += PanelOnDrop; 
+            FirstPanel.Drop += PanelOnDrop;
+            SecondPanel.Drop += PanelOnDrop;
             #endregion
 
             #region Menu
@@ -92,8 +89,8 @@ namespace RAMCommander
 
             CopyPreview.Click += CopyPreviewOnClick;
 
-            FillTable(true, @"C:\Users\alexe\Desktop");
-            FillTable(false, @"C:\Users\alexe\Code\HSE_Stuff");
+            FillTable(true, @"C:\Users");
+            FillTable(false, @"C:\");
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
@@ -201,30 +198,31 @@ namespace RAMCommander
             }
         }
 
-        private void PanelOnMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
+        private void PanelOnPreviewMouseDown(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            ListView listView = (ListView)sender;
-
-
+            ListView listView = (ListView) sender;
+            _isFirstFocused = listView.Name == FirstPanel.Name;
             CheckPanelFocus();
+            
 
-            //if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed)
-            //    DragDrop.DoDragDrop(listView, ((Item)listView.SelectedItem).FullName, DragDropEffects.Copy);
+
+            //if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed && mouseButtonEventArgs.ClickCount == 1)
+            //    DragDrop.DoDragDrop(listView, listView.Items.CurrentItem, DragDropEffects.Copy);
         }
 
-        //private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
-        //{
-        //    DataGrid dataGrid = (DataGrid) sender;
-        //    CheckPanelFocus(dataGrid);
+        private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
+        {
+            //DataGrid dataGrid = (DataGrid)sender;
+            //CheckPanelFocus();
 
-        //    string path = (string) dragEventArgs.Data.GetData(DataFormats.StringFormat);
-        //    Item currentItem = null;
-        //    if (Directory.Exists(path))
-        //        currentItem = new DirectoryItem(path, false);
-        //    else if (File.Exists(path))
-        //        currentItem = new FileItem(path);
-        //    if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid) sender).Name}");
-        //}
+            //string path = (string)dragEventArgs.Data.GetData(DataFormats.StringFormat);
+            //Item currentItem = null;
+            //if (Directory.Exists(path))
+            //    currentItem = new DirectoryItem(path, false);
+            //else if (File.Exists(path))
+            //    currentItem = new FileItem(path);
+            //if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid)sender).Name}");
+        }
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
@@ -284,6 +282,8 @@ namespace RAMCommander
                     FirstPanel.ItemsSource = null;
                     _firstDirectoryItem = new DirectoryItem(path);
                     _firstItems = new List<Item>(_firstDirectoryItem.Subs);
+                    for (int i = 0; i < _firstItems.Count; i++)
+                        _firstItems[i].Index = i;
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
                     FirstPanel.ItemsSource = _firstItems;
                 }
@@ -292,6 +292,8 @@ namespace RAMCommander
                     SecondPanel.ItemsSource = null;
                     _seconDirectoryItem = new DirectoryItem(path);
                     _secondItems = new List<Item>(_seconDirectoryItem.Subs);
+                    for (int i = 0; i < _secondItems.Count; i++)
+                        _secondItems[i].Index = i;
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
                     SecondPanel.ItemsSource = _secondItems;
                 }
@@ -300,6 +302,26 @@ namespace RAMCommander
             {
                 MessageBox.Show(e.Message);
             }
+        }
+
+        private void CheckBoxTemplate_OnChecked(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void CheckBoxTemplate_OnClick(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkBox = (CheckBox) sender;
+            ListViewItem listViewItem = (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
+                int.Parse(checkBox.Uid));
+            if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
+                listViewItem.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#B2EBF2"));
+            else
+                listViewItem.Background = new SolidColorBrush(Colors.White);
+        }
+
+        private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
+        {
+            //if 
         }
     }
 }

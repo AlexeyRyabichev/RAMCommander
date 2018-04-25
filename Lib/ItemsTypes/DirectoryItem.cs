@@ -34,6 +34,7 @@ namespace Lib.ItemsTypes
             Subs = new List<Item> {new BackItem()};
             Subs.AddRange(Directories);
             Subs.AddRange(Files);
+            IsChecked = false;
         }
 
         private List<DirectoryItem> ParseDirectories(DirectoryInfo[] directoryInfos)

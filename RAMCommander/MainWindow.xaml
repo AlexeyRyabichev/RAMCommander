@@ -58,14 +58,21 @@
                                 <CheckBox></CheckBox>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox></CheckBox>
+                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}" Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}"></CheckBox>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
                             <GridViewColumn Header="Name" Width="200">
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
+                                        <StackPanel Orientation="Horizontal" ToolTipService.ShowDuration="10000">
+                                            <StackPanel.ToolTip>
+                                                <StackPanel MaxHeight="500" MaxWidth="500">
+                                                    <MediaElement Source="{Binding FullName}"></MediaElement>
+                                                    <Image Source="{Binding FullName}"></Image>
+                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                </StackPanel>
+                                            </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
                                                    VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
                                             <TextBlock Text="{Binding Name}"></TextBlock>
@@ -127,7 +134,7 @@
                                 <CheckBox></CheckBox>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <CheckBox></CheckBox>
+                                        <CheckBox Name="CheckBoxTemplate" IsChecked="{Binding IsChecked}" Click="CheckBoxTemplate_OnClick" Uid="{Binding Index}"></CheckBox>
                                     </DataTemplate>
                                 </GridViewColumn.CellTemplate>
                             </GridViewColumn>
@@ -135,6 +142,12 @@
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
+                                            <StackPanel.ToolTip>
+                                                <StackPanel MaxHeight="500" MaxWidth="500">
+                                                    <Image Source="{Binding FullName}"></Image>
+                                                    <TextBlock Text="{Binding Name}"></TextBlock>
+                                                </StackPanel>
+                                            </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
                                                    VerticalAlignment="Center" Width="20px" Height="20px" Margin="0, 0, 10, 0"/>
                                             <TextBlock Text="{Binding Name}"></TextBlock>
