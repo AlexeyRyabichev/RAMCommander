@@ -29,8 +29,16 @@ namespace RAMCommander
 
         public MainWindow()
         {
-            //TODO: Previewers
-            //TODO: Coloring
+            //TODO: PDF Previewers 
+            //TODO: User Coloring 
+            //TODO: Copying 
+            //TODO: Moving 
+            //TODO: Renaming 
+            //TODO: File type 
+            //TODO: Localization 
+            //TODO: Panels 
+
+            //TODO: Zoom (additional) 
             InitializeComponent();
 
             //FirstPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
