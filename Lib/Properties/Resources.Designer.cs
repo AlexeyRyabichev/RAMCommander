@@ -59,5 +59,23 @@ namespace Lib.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #BBDEFB.
+        /// </summary>
+        public static string ActivePanelColorDefault {
+            get {
+                return ResourceManager.GetString("ActivePanelColorDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #B2EBF2.
+        /// </summary>
+        public static string SelectedItemColorDefault {
+            get {
+                return ResourceManager.GetString("SelectedItemColorDefault", resourceCulture);
+            }
+        }
     }
 }

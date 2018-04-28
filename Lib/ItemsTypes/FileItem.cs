@@ -86,6 +86,8 @@ namespace Lib.ItemsTypes
             Size = _fileInfo.Length;
             Name = _fileInfo.Name;
             FullName = _fileInfo.FullName;
+            LastAccessed = _fileInfo.LastAccessTimeUtc.ToString();
+            _fileInfo.Attributes.ToString();
             Type = FILE;
             if (_fileInfo.Directory != null) PathToParent = _fileInfo.Directory.FullName;
             if (_fileInfo.Length >> 20 == 0)

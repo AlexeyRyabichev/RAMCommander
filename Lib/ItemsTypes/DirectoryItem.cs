@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using Lib.Interfaces;
 
 namespace Lib.ItemsTypes
@@ -25,6 +26,7 @@ namespace Lib.ItemsTypes
             Type = DIRECTORY;
             SizeItem = "";
             Size = int.MaxValue;
+            LastAccessed = _directoryInfo.LastAccessTimeUtc.ToString();
             DateModified = _directoryInfo.LastWriteTimeUtc.ToString();
             if (directoryInfo.Parent != null) PathToParent = directoryInfo.Parent.FullName;
 
@@ -32,10 +34,14 @@ namespace Lib.ItemsTypes
 
             Directories = ParseDirectories(_directoryInfo.GetDirectories());
             Files = ParseFiles(_directoryInfo.GetFiles());
+            //Attributes = _directoryInfo.Attributes.ToString();
             Subs = new List<Item> {new BackItem()};
             Subs.AddRange(Directories);
             Subs.AddRange(Files);
             IsChecked = false;
+
+            DirectorySecurity directorySecurity = _directoryInfo.GetAccessControl();
+            directorySecurity.GetSecurityDescriptorSddlForm(AccessControlSections.All);
         }
 
         private List<DirectoryItem> ParseDirectories(DirectoryInfo[] directoryInfos)

@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Colors.cs" />
     <Compile Include="Interfaces\IDirectoriesFunctions.cs" />
     <Compile Include="Interfaces\IFileFunctions.cs" />
     <Compile Include="Interfaces\IFunctions.cs" />

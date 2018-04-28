@@ -117,4 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ActivePanelColorDefault" xml:space="preserve">
+    <value>#BBDEFB</value>
+  </data>
+  <data name="SelectedItemColorDefault" xml:space="preserve">
+    <value>#B2EBF2</value>
+  </data>
 </root>

@@ -5,10 +5,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Lib.ItemsTypes;
 using RAMCommander.Windows;
+using CheckBox = System.Windows.Controls.CheckBox;
+using Control = System.Windows.Controls.Control;
+using DragEventArgs = System.Windows.DragEventArgs;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using ListView = System.Windows.Controls.ListView;
+using ListViewItem = System.Windows.Controls.ListViewItem;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace RAMCommander
 {
@@ -27,24 +37,25 @@ namespace RAMCommander
 
         public MainWindow()
         {
-            //TODO: PDF Previewers 
-            //TODO: User Coloring 
-            //TODO: Copying 
-            //TODO: Moving 
-            //TODO: Renaming 
-            //TODO: File type 
-            //TODO: Localization 
-            //TODO: Panels 
-
             //TODO: Zoom (additional) 
+
+            Closing += (sender, args) =>
+            {
+                if (File.Exists("instances.txt")) 
+                    File.Delete("instance.txt");
+                File.WriteAllLines("instance.txt", new []{FirstPanelPath.Text, SecondPanelPath.Text, Lib.Colors.ActivePanelColor, Lib.Colors.SelectedItemColor});
+            };
             InitializeComponent();
+
+            FirstPanel.SelectionChanged += PanelOnSelectionChanged;
+            SecondPanel.SelectionChanged += PanelOnSelectionChanged;
 
             //FirstPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
             //SecondPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
 
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString("#BBDEFB")))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Lib.Colors.ActivePanelColor)))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
@@ -87,22 +98,88 @@ namespace RAMCommander
             NewFolderMenuItem.Click += (sender, args) => CreateNewFolder();
             NewFolderFastKey.Click += (sender, args) => CreateNewFolder();
 
-            DeleteFileMenuItem.Click += (sender, args) => Delete();
-            DeleteFolderMenuItem.Click += (sender, args) => Delete();
-
-            DeleteFastKey.Click += (sender, args) => Delete();
+            DeleteFastKey.Click += DeleteFastKeyOnClick;
             RenameFastKey.Click += (sender, args) =>
                 Rename((Item) (_isFirstFocused ? FirstPanel.SelectedItem : SecondPanel.SelectedItem), _isFirstFocused);
+            CopyFastKey.Click += CopyFastKeyOnClick;
+
+            SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
             #endregion
 
-            CopyPreview.Click += CopyPreviewOnClick;
+            string firstPath = @"C:\";
+            string secondPath = @"C:\";
 
-            FillTable(true, @"C:\Users");
-            FillTable(false, @"C:\");
+            if (File.Exists("instance.txt"))
+            {
+                firstPath = File.ReadAllLines("instance.txt")[0];
+                secondPath = File.ReadAllLines("instance.txt")[1];
+                Lib.Colors.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
+                Lib.Colors.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
+                CheckPanelFocus();
+            }
+
+            FillTable(true, firstPath);
+            FillTable(false, secondPath);
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void SettingsMenuItemOnClick(object sender, RoutedEventArgs e)
+        {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
+            if ((bool) settingsWindow.DialogResult)
+            {
+                CheckPanelFocus();
+
+            }
+        }
+
+        private void DeleteFastKeyOnClick(object sender, RoutedEventArgs e)
+        {
+            string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
+            foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
+            {
+                if (item.IsChecked)
+                    item.Copy(newPath);
+            }
+
+            UpdatePanels();
+        }
+
+        private void CopyFastKeyOnClick(object sender, RoutedEventArgs e)
+        {
+            string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
+            foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
+            {
+                if (item.IsChecked)
+                    item.Copy(newPath);
+            }
+
+            UpdatePanels();
+        }
+
+        private void UpdatePanels()
+        {
+            FillTable(true, FirstPanelPath.Text);
+            FillTable(false, SecondPanelPath.Text);
+        }
+
+        private void PanelOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+
+                Item item = (Item)(_isFirstFocused ? FirstPanel : SecondPanel).SelectedItem;
+                
+                (_isFirstFocused ? FirstInfo : SecondInfo).Text = "Path: " + item.FullName + (item is FileItem ? $"\tSize: {item.SizeItem}" : "") + (item is BackItem ? "" : $"\t Last accessed: {item.LastAccessed}");
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         private void PanelOnKeyDown(object sender, KeyEventArgs keyEventArgs)
@@ -195,15 +272,19 @@ namespace RAMCommander
 
         private void CheckPanelFocus()
         {
+            Style FocusedStyle = new Style(typeof(Control));
+            FocusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                new SolidColorBrush((Color)ColorConverter.ConvertFromString(Lib.Colors.ActivePanelColor)))); //fae1c0
+
             if (_isFirstFocused)
             {
-                FirstGridView.ColumnHeaderContainerStyle = _focusedStyle;
+                FirstGridView.ColumnHeaderContainerStyle = FocusedStyle;
                 SecondGridView.ColumnHeaderContainerStyle = _standardStyle;
             }
             else
             {
                 FirstGridView.ColumnHeaderContainerStyle = _standardStyle;
-                SecondGridView.ColumnHeaderContainerStyle = _focusedStyle;
+                SecondGridView.ColumnHeaderContainerStyle = FocusedStyle;
             }
         }
 
@@ -324,7 +405,7 @@ namespace RAMCommander
                 (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
                     int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
-                listViewItem.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#B2EBF2"));
+                listViewItem.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString(Lib.Colors.SelectedItemColor));
             else
                 listViewItem.Background = new SolidColorBrush(Colors.White);
         }

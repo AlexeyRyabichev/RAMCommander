@@ -20,20 +20,20 @@
         <Menu Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0">
             <MenuItem Header="File">
                 <MenuItem Header="New" Name="NewFileMenuItem" />
-                <MenuItem Header="Delete" Name="DeleteFileMenuItem" />
             </MenuItem>
             <MenuItem Header="Folder">
                 <MenuItem Header="New" Name="NewFolderMenuItem" />
-                <MenuItem Header="Delete" Name="DeleteFolderMenuItem" />
             </MenuItem>
+            <MenuItem Header="Settings" Name="SettingsMenuItem" />
         </Menu>
 
         <Menu Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
             <MenuItem Header="New file" Name="NewFileFastKey" />
             <MenuItem Header="New folder" Name="NewFolderFastKey" />
-            <MenuItem Header="Rename" Name="RenameFastKey" />
+            <MenuItem Header="Copy" Name="CopyFastKey" />
+            <MenuItem Header="Move" Name="MoveFastKey" />
+            <MenuItem Header="Rename" Name="RenameFastKey" IsEnabled="False" />
             <MenuItem Header="Delete" Name="DeleteFastKey" />
-            <MenuItem Header="Copy Preview" Name="CopyPreview" />
         </Menu>
 
         <Grid Grid.Row="2" Column="0">
@@ -95,7 +95,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="FirstInfo"/>
         </Grid>
 
 
@@ -160,7 +160,7 @@
                 </ListView.View>
             </ListView>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="SecondInfo"/>
         </Grid>
     </Grid>
 </Window>

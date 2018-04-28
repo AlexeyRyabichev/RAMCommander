@@ -13,6 +13,7 @@ namespace Lib.Interfaces
         string Type { get; }
         string PathToParent { get; }
         string Extension { get; }
+        string LastAccessed { get; }
         long Size { get; }
         bool IsChecked { get; set; }
         int Index { get; set; }
