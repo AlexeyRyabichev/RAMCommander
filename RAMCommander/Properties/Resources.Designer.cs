@@ -243,6 +243,16 @@ namespace RAMCommander.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        public static System.Drawing.Bitmap refresh48 {
+            get {
+                object obj = ResourceManager.GetObject("refresh48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         public static System.Drawing.Bitmap txt48 {
             get {
                 object obj = ResourceManager.GetObject("txt48", resourceCulture);

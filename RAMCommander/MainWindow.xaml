@@ -48,7 +48,8 @@
             </Grid.RowDefinitions>
 
             <TextBox Grid.Column="0" Grid.Row="0" Name="FirstPanelPath" />
-            <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+            <!--<Image Source="Resources/refresh48.png" Height="15" Width="15" Grid.Column="1" Grid.Row="0"></Image>-->
+            <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                       Name="FirstPanelButton" />
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel">
                 <ListView.View>

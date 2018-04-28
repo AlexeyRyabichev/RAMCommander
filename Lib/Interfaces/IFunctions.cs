@@ -1,8 +1,12 @@
-﻿namespace Lib.Interfaces
+﻿using System;
+using System.Threading.Tasks;
+
+namespace Lib.Interfaces
 {
     public interface IFunctions
     {
-        void Copy(string newPathToParent);
+        Task Copy(IProgress<double> progress, string destination);
+        //void Copy(string newPathToParent);
         void Move(string newPathToParent);
         void Delete();
         void Rename(string newName);

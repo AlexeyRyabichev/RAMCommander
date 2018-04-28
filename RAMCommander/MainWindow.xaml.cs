@@ -3,22 +3,16 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Forms;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using Lib.ItemsTypes;
 using RAMCommander.Windows;
-using CheckBox = System.Windows.Controls.CheckBox;
-using Control = System.Windows.Controls.Control;
-using DragEventArgs = System.Windows.DragEventArgs;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using ListView = System.Windows.Controls.ListView;
-using ListViewItem = System.Windows.Controls.ListViewItem;
-using MessageBox = System.Windows.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using TextBox = System.Windows.Controls.TextBox;
+using Colors = Lib.Colors;
 
 namespace RAMCommander
 {
@@ -41,9 +35,13 @@ namespace RAMCommander
 
             Closing += (sender, args) =>
             {
-                if (File.Exists("instances.txt")) 
+                if (File.Exists("instances.txt"))
                     File.Delete("instance.txt");
-                File.WriteAllLines("instance.txt", new []{FirstPanelPath.Text, SecondPanelPath.Text, Lib.Colors.ActivePanelColor, Lib.Colors.SelectedItemColor});
+                File.WriteAllLines("instance.txt",
+                    new[]
+                    {
+                        FirstPanelPath.Text, SecondPanelPath.Text, Colors.ActivePanelColor, Colors.SelectedItemColor
+                    });
             };
             InitializeComponent();
 
@@ -55,12 +53,12 @@ namespace RAMCommander
 
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Lib.Colors.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.ActivePanelColor)))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
             _standardStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush(Colors.White)));
+                new SolidColorBrush(System.Windows.Media.Colors.White)));
 
             #region Clickers
 
@@ -114,8 +112,8 @@ namespace RAMCommander
             {
                 firstPath = File.ReadAllLines("instance.txt")[0];
                 secondPath = File.ReadAllLines("instance.txt")[1];
-                Lib.Colors.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
-                Lib.Colors.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
+                Colors.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
+                Colors.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
                 CheckPanelFocus();
             }
 
@@ -130,21 +128,14 @@ namespace RAMCommander
         {
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog();
-            if ((bool) settingsWindow.DialogResult)
-            {
-                CheckPanelFocus();
-
-            }
+            if ((bool) settingsWindow.DialogResult) CheckPanelFocus();
         }
 
         private void DeleteFastKeyOnClick(object sender, RoutedEventArgs e)
         {
-            string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
             foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
-            {
                 if (item.IsChecked)
-                    item.Copy(newPath);
-            }
+                    item.Delete();
 
             UpdatePanels();
         }
@@ -152,13 +143,18 @@ namespace RAMCommander
         private void CopyFastKeyOnClick(object sender, RoutedEventArgs e)
         {
             string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
-            foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
-            {
-                if (item.IsChecked)
-                    item.Copy(newPath);
-            }
+            //List<Item>  items = new List<Item>();
+            //foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
+            //{
+            //    if (item.IsChecked)
+            //        items.Add(item);
+            //}
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
 
-            UpdatePanels();
+            OperationWindow operationWindow = new OperationWindow("Copying");
+            operationWindow.OnFinish += (o, s) => UpdatePanels();
+            operationWindow.Show();
+            operationWindow.Copy(items, newPath);
         }
 
         private void UpdatePanels()
@@ -171,10 +167,11 @@ namespace RAMCommander
         {
             try
             {
+                Item item = (Item) (_isFirstFocused ? FirstPanel : SecondPanel).SelectedItem;
 
-                Item item = (Item)(_isFirstFocused ? FirstPanel : SecondPanel).SelectedItem;
-                
-                (_isFirstFocused ? FirstInfo : SecondInfo).Text = "Path: " + item.FullName + (item is FileItem ? $"\tSize: {item.SizeItem}" : "") + (item is BackItem ? "" : $"\t Last accessed: {item.LastAccessed}");
+                (_isFirstFocused ? FirstInfo : SecondInfo).Text =
+                    "Path: " + item.FullName + (item is FileItem ? $"\tSize: {item.SizeItem}" : "") +
+                    (item is BackItem ? "" : $"\t Last accessed: {item.LastAccessed}");
             }
             catch (Exception)
             {
@@ -274,7 +271,7 @@ namespace RAMCommander
         {
             Style FocusedStyle = new Style(typeof(Control));
             FocusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color)ColorConverter.ConvertFromString(Lib.Colors.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.ActivePanelColor)))); //fae1c0
 
             if (_isFirstFocused)
             {
@@ -405,9 +402,10 @@ namespace RAMCommander
                 (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
                     int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
-                listViewItem.Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString(Lib.Colors.SelectedItemColor));
+                listViewItem.Background =
+                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.SelectedItemColor));
             else
-                listViewItem.Background = new SolidColorBrush(Colors.White);
+                listViewItem.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
         }
 
         private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
@@ -437,7 +435,6 @@ namespace RAMCommander
                 (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Clear();
                 (_isFirstFocused ? FirstPanel : SecondPanel).Items.SortDescriptions.Add(desc);
             }
-            
         }
     }
 }

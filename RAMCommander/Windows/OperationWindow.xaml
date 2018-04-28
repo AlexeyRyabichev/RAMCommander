@@ -5,24 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RAMCommander.Windows"
         mc:Ignorable="d"
-        Title="OperationWindow" Height="450" Width="800">
+        Title="OperationWindow" Height="150" Width="400">
     <Grid>
 
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Name="CurrentOperationText" VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontSize="20" />
-        <TextBlock Grid.Row="1" Name="TotalProgressText" VerticalAlignment="Center" HorizontalAlignment="Center"
+        <TextBlock Grid.Row="1" Name="CurrentItemProgressText" VerticalAlignment="Center" HorizontalAlignment="Center"
                    FontSize="20" />
-        <ProgressBar Grid.Row="2" Name="TotalProgressBar" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-        <TextBlock Grid.Row="3" Name="CurrentItemProgressText" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontSize="20" />
-        <ProgressBar Grid.Row="4" Name="CurrentItemProgressBar" VerticalAlignment="Stretch"
+        <ProgressBar Grid.Row="2" Name="CurrentItemProgressBar" VerticalAlignment="Stretch"
                      HorizontalAlignment="Stretch" />
     </Grid>
 </Window>

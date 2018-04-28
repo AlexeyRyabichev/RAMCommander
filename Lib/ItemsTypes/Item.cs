@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using Lib.Interfaces;
 
@@ -11,27 +13,66 @@ namespace Lib.ItemsTypes
         public static string FILE = "File";
         public static string BACK = "Back";
 
-        public void Copy(string newPathToParent)
+
+        public async Task Copy(IProgress<double> progress, string destination)
         {
-            Item item = this;
-            if (item is FileItem)
-                if (Directory.Exists(newPathToParent) && File.Exists(item.FullName))
-                    if (File.Exists(Path.Combine(newPathToParent, item.Name)))
-                        MessageBox.Show("File already exists");
-                    else
-                        File.Copy(item.FullName, Path.Combine(newPathToParent, item.Name));
-                else
-                    MessageBox.Show("File or directory don't exists");
-            else if (item is DirectoryItem)
-                if (Directory.Exists(newPathToParent) && Directory.Exists(item.FullName))
-                    if (Directory.Exists(Path.Combine(newPathToParent, item.Name)))
-                        MessageBox.Show("Directory already exists");
-                    else
-                        MessageBox.Show("Copying of directories coming soon");
-                //Directory.Copy(item.FullName, Path.Combine(newPathToParent, item.Name));
-                else
-                    MessageBox.Show("Directory don't exists");
+
+            byte[] buffer = new byte[1024 * 1024]; // 1mb
+            bool cancelFlag = false;
+
+            using (FileStream sourceFileStream = new FileStream(FullName, FileMode.Open, FileAccess.Read))
+            {
+                long fileLength = sourceFileStream.Length;
+                using (FileStream destFileStream = new FileStream(Path.Combine(destination, Name), FileMode.CreateNew, FileAccess.Write))
+                {
+                    long totalBytes = 0;
+                    int currentBlockSize = 0;
+
+                    while ((currentBlockSize = sourceFileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        double percentage = 0;
+                        await Task.Run(() => {
+                            totalBytes += currentBlockSize;
+
+                            percentage = totalBytes * 100.0 / fileLength;
+
+                            destFileStream.Write(buffer, 0, currentBlockSize);
+
+                            cancelFlag = false;
+                        });
+
+                        //OnProgressChanged(percentage, ref cancelFlag);
+                        //CurrentItemProgressBar.Value = percentage;
+                        progress.Report(percentage);
+
+                        if (cancelFlag)
+                            break;
+                    }
+                }
+            }
         }
+
+        //public void Copy(string newPathToParent)
+        //{
+        //Item item = this;
+        //if (item is FileItem)
+        //    if (Directory.Exists(newPathToParent) && File.Exists(item.FullName))
+        //        if (File.Exists(Path.Combine(newPathToParent, item.Name)))
+        //            MessageBox.Show("File already exists");
+        //        else
+        //            File.Copy(item.FullName, Path.Combine(newPathToParent, item.Name));
+        //    else
+        //        MessageBox.Show("File or directory don't exists");
+        //else if (item is DirectoryItem)
+        //    if (Directory.Exists(newPathToParent) && Directory.Exists(item.FullName))
+        //        if (Directory.Exists(Path.Combine(newPathToParent, item.Name)))
+        //            MessageBox.Show("Directory already exists");
+        //        else
+        //            MessageBox.Show("Copying of directories coming soon");
+        //    //Directory.Copy(item.FullName, Path.Combine(newPathToParent, item.Name));
+        //    else
+        //        MessageBox.Show("Directory don't exists");
+        //}
 
         public void Move(string newPathToParent)
         {
