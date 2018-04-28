@@ -1,18 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Lib.ItemsTypes;
 using RAMCommander.Windows;
+using Binding = System.Windows.Data.Binding;
+using CheckBox = System.Windows.Controls.CheckBox;
 using Colors = Lib.Colors;
+using Control = System.Windows.Controls.Control;
+using DragEventArgs = System.Windows.DragEventArgs;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using ListView = System.Windows.Controls.ListView;
+using ListViewItem = System.Windows.Controls.ListViewItem;
+using MessageBox = System.Windows.MessageBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Orientation = System.Windows.Controls.Orientation;
+using TextBox = System.Windows.Controls.TextBox;
 
 namespace RAMCommander
 {
@@ -29,11 +43,10 @@ namespace RAMCommander
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
         public string ImageRefreshSource;
+        private int _imageSize = 30;
 
         public MainWindow()
         {
-            //TODO: Zoom (additional) 
-
             Closing += (sender, args) =>
             {
                 if (File.Exists("instances.txt"))
@@ -45,6 +58,9 @@ namespace RAMCommander
                     });
             };
             InitializeComponent();
+
+            FirstPanel.PreviewMouseWheel += PanelOnMouseWheel;
+            SecondPanel.PreviewMouseWheel += PanelOnMouseWheel;
 
             FirstPanelButton.Content = "Refresh";
             SecondPanelButton.Content = "Refresh";
@@ -129,6 +145,42 @@ namespace RAMCommander
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void PanelOnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ListView listView = (ListView) sender;
+            _isFirstFocused = listView.Name == FirstPanel.Name;
+
+            if (!Keyboard.IsKeyDown(Key.LeftCtrl)) return;
+           
+            if (e.Delta > 0)
+            {
+                listView.FontSize += 1;
+
+                listView.ItemsSource = null;
+
+                foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
+                {
+                    item.IndexForImage += 1;
+                }
+                listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
+
+            }
+            else if (e.Delta < 0)
+            {
+                if (listView.FontSize > 1)
+                listView.FontSize -= 1;
+
+                listView.ItemsSource = null;
+
+                foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
+                {
+                    if (item.IndexForImage > 10)
+                    item.IndexForImage -= 1;
+                }
+                listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
+            }
         }
 
         private void SettingsMenuItemOnClick(object sender, RoutedEventArgs e)
@@ -377,7 +429,10 @@ namespace RAMCommander
                     _firstDirectoryItem = new DirectoryItem(path);
                     _firstItems = new List<Item>(_firstDirectoryItem.Subs);
                     for (int i = 0; i < _firstItems.Count; i++)
+                    {
                         _firstItems[i].Index = i;
+                        _firstItems[i].IndexForImage = 20;
+                    }
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
                     FirstPanel.ItemsSource = _firstItems;
                 }
@@ -387,7 +442,10 @@ namespace RAMCommander
                     _seconDirectoryItem = new DirectoryItem(path);
                     _secondItems = new List<Item>(_seconDirectoryItem.Subs);
                     for (int i = 0; i < _secondItems.Count; i++)
+                    {
                         _secondItems[i].Index = i;
+                        _secondItems[i].IndexForImage = 20;
+                    }
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
                     SecondPanel.ItemsSource = _secondItems;
                 }

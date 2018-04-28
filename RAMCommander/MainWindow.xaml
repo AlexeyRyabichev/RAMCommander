@@ -76,7 +76,7 @@
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="20px" Height="20px"
+                                                   VerticalAlignment="Center" Width="{Binding IndexForImage}" Height="{Binding IndexForImage}"
                                                    Margin="0, 0, 10, 0" />
                                             <TextBlock Text="{Binding Name}" />
                                         </StackPanel>
@@ -140,7 +140,7 @@
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="20px" Height="20px"
+                                                   VerticalAlignment="Center" Width="{Binding IndexForImage}" Height="{Binding IndexForImage}"
                                                    Margin="0, 0, 10, 0" />
                                             <TextBlock Text="{Binding Name}" />
                                         </StackPanel>

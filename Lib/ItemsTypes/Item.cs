@@ -171,6 +171,7 @@ namespace Lib.ItemsTypes
         public long Size { get; protected set; }
         public bool IsChecked { get; set; }
         public int Index { get; set; }
+        public int IndexForImage { get; set; }
         public List<Item> Subs { get; protected set; }
     }
 }

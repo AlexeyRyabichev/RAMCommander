@@ -17,6 +17,7 @@ namespace Lib.Interfaces
         long Size { get; }
         bool IsChecked { get; set; }
         int Index { get; set; }
+        int IndexForImage { get; set; }
         List<Item> Subs { get; }
     }
 }
