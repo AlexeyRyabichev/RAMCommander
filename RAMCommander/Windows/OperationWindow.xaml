@@ -14,9 +14,9 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" Name="CurrentOperationText" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontSize="20" />
+                   FontSize="15" />
         <TextBlock Grid.Row="1" Name="CurrentItemProgressText" VerticalAlignment="Center" HorizontalAlignment="Center"
-                   FontSize="20" />
+                   FontSize="15" />
         <ProgressBar Grid.Row="2" Name="CurrentItemProgressBar" VerticalAlignment="Stretch"
                      HorizontalAlignment="Stretch" />
     </Grid>

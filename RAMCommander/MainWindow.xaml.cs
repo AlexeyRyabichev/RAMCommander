@@ -28,6 +28,7 @@ namespace RAMCommander
         private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
+        public string ImageRefreshSource;
 
         public MainWindow()
         {
@@ -44,6 +45,12 @@ namespace RAMCommander
                     });
             };
             InitializeComponent();
+
+            FirstPanelButton.Content = "Refresh";
+            SecondPanelButton.Content = "Refresh";
+
+            FirstPanelButton.Click += (sender, args) => FillTable(true, FirstPanelPath.Text);
+            SecondPanelButton.Click += (sender, args) => FillTable(false, SecondPanelPath.Text);
 
             FirstPanel.SelectionChanged += PanelOnSelectionChanged;
             SecondPanel.SelectionChanged += PanelOnSelectionChanged;

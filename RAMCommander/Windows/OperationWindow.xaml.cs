@@ -34,7 +34,6 @@ namespace RAMCommander.Windows
 
         public async void Copy(List<Item> items, string destination)
         {
-            var progress = new Progress<double>(d => { CurrentItemProgressBar.Value = d; });
             foreach (var item in items)
                 if (item is DirectoryItem)
                 {
@@ -43,7 +42,7 @@ namespace RAMCommander.Windows
                 }
                 else if (item is FileItem)
                 {
-                    CurrentItemProgressText.Text = $"{CURRFILE} {item.Name}";
+                    var progress = new Progress<double>(d => { CurrentItemProgressBar.Value = d; CurrentItemProgressText.Text = $"{CURRFILE} {item.Name} {d:f2}%"; });
                     await item.Copy(progress, destination);
                 }
 

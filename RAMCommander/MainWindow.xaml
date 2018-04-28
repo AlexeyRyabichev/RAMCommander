@@ -48,9 +48,9 @@
             </Grid.RowDefinitions>
 
             <TextBox Grid.Column="0" Grid.Row="0" Name="FirstPanelPath" />
-            <!--<Image Source="Resources/refresh48.png" Height="15" Width="15" Grid.Column="1" Grid.Row="0"></Image>-->
+            <!--<Image Source="{Binding ImageRefreshSource}" Grid.Column="1" Grid.Row="0" Width="15" Height="15"/>-->
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                      Name="FirstPanelButton" />
+                      Name="FirstPanelButton"  Height="20" Width="20" />
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel">
                 <ListView.View>
                     <GridView x:Name="FirstGridView" AllowsColumnReorder="False">
@@ -96,7 +96,7 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="FirstInfo"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="FirstInfo" />
         </Grid>
 
 
@@ -112,8 +112,8 @@
             </Grid.RowDefinitions>
 
             <TextBox Grid.Column="0" Grid.Row="0" Name="SecondPanelPath" />
-            <CheckBox Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                      Name="SecondPanelButton" />
+            <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Name="SecondPanelButton"  Height="20" Width="20" />
 
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel">
                 <ListView.View>
@@ -132,7 +132,7 @@
                                 <GridViewColumnHeader Click="ColumnSort">Name</GridViewColumnHeader>
                                 <GridViewColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" ToolTipService.ShowDuration="10000">
+                                        <StackPanel Orientation="Horizontal" ToolTipService.ShowDuration="60000">
                                             <StackPanel.ToolTip>
                                                 <StackPanel MaxHeight="500" MaxWidth="500">
                                                     <MediaElement Source="{Binding FullName}" />
@@ -161,7 +161,7 @@
                 </ListView.View>
             </ListView>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="SecondInfo"/>
+            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="SecondInfo" />
         </Grid>
     </Grid>
 </Window>

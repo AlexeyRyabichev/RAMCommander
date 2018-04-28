@@ -105,7 +105,15 @@ namespace Lib.ItemsTypes
                     MessageBox.Show("File don't exists");
             else if (item is DirectoryItem)
                 if (Directory.Exists(item.FullName))
-                    Directory.Delete(item.FullName);
+                    if (new DirectoryItem(item.FullName, true).Subs != null)
+                    {
+                        foreach (Item sub in new DirectoryItem(item.FullName, true).Subs)
+                            sub.Delete();
+                        
+                        Directory.Delete(item.FullName);
+                    }
+                    else
+                        Directory.Delete(item.FullName);
                 else
                     MessageBox.Show("Directory don't exists");
         }
