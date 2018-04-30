@@ -40,12 +40,13 @@ namespace RAMCommander.Windows
             {
                 case Key.Enter:
                     DialogResult = true;
+                    e.Handled = true;
                     break;
                 case Key.Escape:
                     DialogResult = false;
+                    e.Handled = true;
                     break;
             }
-            e.Handled = true;
         }
     }
 }

@@ -13,11 +13,12 @@ using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using Lib;
 using Lib.ItemsTypes;
+using Microsoft.VisualBasic.FileIO;
 using RAMCommander.Windows;
 using Binding = System.Windows.Data.Binding;
 using CheckBox = System.Windows.Controls.CheckBox;
-using Colors = Lib.Colors;
 using Control = System.Windows.Controls.Control;
 using DragEventArgs = System.Windows.DragEventArgs;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
@@ -43,7 +44,6 @@ namespace RAMCommander
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
         public string ImageRefreshSource;
-        private int _imageSize = 30;
 
         public MainWindow()
         {
@@ -54,7 +54,7 @@ namespace RAMCommander
                 File.WriteAllLines("instance.txt",
                     new[]
                     {
-                        FirstPanelPath.Text, SecondPanelPath.Text, Colors.ActivePanelColor, Colors.SelectedItemColor
+                        FirstPanelPath.Text, SecondPanelPath.Text, SettingsBackup.ActivePanelColor, SettingsBackup.SelectedItemColor
                     });
             };
             InitializeComponent();
@@ -76,7 +76,7 @@ namespace RAMCommander
 
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor)))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
@@ -120,9 +120,10 @@ namespace RAMCommander
             NewFolderFastKey.Click += (sender, args) => CreateNewFolder();
 
             DeleteFastKey.Click += DeleteFastKeyOnClick;
-            RenameFastKey.Click += (sender, args) =>
-                Rename((Item) (_isFirstFocused ? FirstPanel.SelectedItem : SecondPanel.SelectedItem), _isFirstFocused);
+            RenameFastKey.Click += RenameFastKeyOnClick;
             CopyFastKey.Click += CopyFastKeyOnClick;
+            MoveFastKey.Click += MoveFastKeyOnClick;
+            CopyFastKeyWindows.Click += CopyFastKeyWindowsOnClick;
 
             SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
@@ -135,8 +136,8 @@ namespace RAMCommander
             {
                 firstPath = File.ReadAllLines("instance.txt")[0];
                 secondPath = File.ReadAllLines("instance.txt")[1];
-                Colors.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
-                Colors.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
+                SettingsBackup.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
+                SettingsBackup.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
                 CheckPanelFocus();
             }
 
@@ -145,6 +146,51 @@ namespace RAMCommander
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void CopyFastKeyWindowsOnClick(object sender, RoutedEventArgs e)
+        {
+            string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+
+            //Windows built-in copying
+            foreach (Item item in items)
+            {
+                if (item is FileItem)
+                    FileSystem.CopyFile(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs, UICancelOption.DoNothing);
+                else if (item is DirectoryItem)
+                    FileSystem.CopyDirectory(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs, UICancelOption.DoNothing);
+            }
+
+            UpdatePanels();
+        }
+
+        private void MoveFastKeyOnClick(object sender, RoutedEventArgs e)
+        {
+            string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+
+
+            OperationWindow operationWindow = new OperationWindow("Moving");
+            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
+            operationWindow.Show();
+            operationWindow.Move(items, newPath);
+
+            UpdatePanels();
+        }
+
+        private void RenameFastKeyOnClick(object sender, RoutedEventArgs e)
+        {
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+
+            foreach (Item item in items)
+            {
+                ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename file", item.Name);
+                if ((bool) chooseNameWindow.ShowDialog())
+                    item.Rename(chooseNameWindow.NewName);
+            }
+
+            UpdatePanels();
         }
 
         private void PanelOnMouseWheel(object sender, MouseWheelEventArgs e)
@@ -162,7 +208,7 @@ namespace RAMCommander
 
                 foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
                 {
-                    item.IndexForImage += 1;
+                    item.ImageSize += 1;
                 }
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
 
@@ -176,8 +222,8 @@ namespace RAMCommander
 
                 foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
                 {
-                    if (item.IndexForImage > 10)
-                    item.IndexForImage -= 1;
+                    if (item.ImageSize > 10)
+                    item.ImageSize -= 1;
                 }
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
             }
@@ -192,9 +238,11 @@ namespace RAMCommander
 
         private void DeleteFastKeyOnClick(object sender, RoutedEventArgs e)
         {
-            foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
-                if (item.IsChecked)
-                    item.Delete();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            OperationWindow operationWindow = new OperationWindow("Deleting");
+            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
+            operationWindow.Show();
+            operationWindow.Delete(items);
 
             UpdatePanels();
         }
@@ -202,16 +250,10 @@ namespace RAMCommander
         private void CopyFastKeyOnClick(object sender, RoutedEventArgs e)
         {
             string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
-            //List<Item>  items = new List<Item>();
-            //foreach (Item item in (_isFirstFocused ? FirstPanel : SecondPanel).Items)
-            //{
-            //    if (item.IsChecked)
-            //        items.Add(item);
-            //}
             List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
 
             OperationWindow operationWindow = new OperationWindow("Copying");
-            operationWindow.OnFinish += (o, s) => UpdatePanels();
+            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
             operationWindow.Show();
             operationWindow.Copy(items, newPath);
         }
@@ -330,7 +372,7 @@ namespace RAMCommander
         {
             Style FocusedStyle = new Style(typeof(Control));
             FocusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor)))); //fae1c0
 
             if (_isFirstFocused)
             {
@@ -431,7 +473,7 @@ namespace RAMCommander
                     for (int i = 0; i < _firstItems.Count; i++)
                     {
                         _firstItems[i].Index = i;
-                        _firstItems[i].IndexForImage = 20;
+                        _firstItems[i].ImageSize = SettingsBackup.ImageSizeFirstPanel;
                     }
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
                     FirstPanel.ItemsSource = _firstItems;
@@ -444,7 +486,7 @@ namespace RAMCommander
                     for (int i = 0; i < _secondItems.Count; i++)
                     {
                         _secondItems[i].Index = i;
-                        _secondItems[i].IndexForImage = 20;
+                        _secondItems[i].ImageSize = SettingsBackup.ImageSizeSecondPanel;
                     }
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
                     SecondPanel.ItemsSource = _secondItems;
@@ -468,7 +510,7 @@ namespace RAMCommander
                     int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
                 listViewItem.Background =
-                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(Colors.SelectedItemColor));
+                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColor));
             else
                 listViewItem.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
         }
