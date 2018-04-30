@@ -34,6 +34,7 @@
             <MenuItem Header="Copy windows built-in" Name="CopyFastKeyWindows" />
             <MenuItem Header="Move" Name="MoveFastKey" />
             <MenuItem Header="Rename" Name="RenameFastKey" />
+            <MenuItem Header="Template renaming" Name="RenameTemplateFastKey" />
             <MenuItem Header="Delete" Name="DeleteFastKey" />
         </Menu>
 

@@ -111,6 +111,9 @@
     <Compile Include="Windows\ChooseNameWindow.xaml.cs">
       <DependentUpon>ChooseNameWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\GroupRenamingWindow.xaml.cs">
+      <DependentUpon>GroupRenamingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\OperationWindow.xaml.cs">
       <DependentUpon>OperationWindow.xaml</DependentUpon>
     </Compile>
@@ -130,6 +133,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Windows\ChooseNameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\GroupRenamingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

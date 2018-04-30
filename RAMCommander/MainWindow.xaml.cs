@@ -1,33 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using Lib;
 using Lib.ItemsTypes;
 using Microsoft.VisualBasic.FileIO;
 using RAMCommander.Windows;
-using Binding = System.Windows.Data.Binding;
-using CheckBox = System.Windows.Controls.CheckBox;
-using Control = System.Windows.Controls.Control;
-using DragEventArgs = System.Windows.DragEventArgs;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using ListView = System.Windows.Controls.ListView;
-using ListViewItem = System.Windows.Controls.ListViewItem;
-using MessageBox = System.Windows.MessageBox;
-using MouseEventArgs = System.Windows.Input.MouseEventArgs;
-using Orientation = System.Windows.Controls.Orientation;
-using TextBox = System.Windows.Controls.TextBox;
 
 namespace RAMCommander
 {
@@ -81,7 +65,7 @@ namespace RAMCommander
 
             _standardStyle = new Style(typeof(Control));
             _standardStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush(System.Windows.Media.Colors.White)));
+                new SolidColorBrush(Colors.White)));
 
             #region Clickers
 
@@ -124,6 +108,7 @@ namespace RAMCommander
             CopyFastKey.Click += CopyFastKeyOnClick;
             MoveFastKey.Click += MoveFastKeyOnClick;
             CopyFastKeyWindows.Click += CopyFastKeyWindowsOnClick;
+            RenameTemplateFastKey.Click += RenameTemplateFastKeyOnClick;
 
             SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
@@ -146,6 +131,23 @@ namespace RAMCommander
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void RenameTemplateFastKeyOnClick(object sender, RoutedEventArgs e)
+        {
+            GroupRenamingWindow groupRenamingWindow = new GroupRenamingWindow();
+            if ((bool) groupRenamingWindow.ShowDialog())
+            {
+                string template = groupRenamingWindow.NewName;
+                List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+                foreach (Item item in items)
+                {
+                    string newName = template.Replace("{DATE}", item.DateModified).Replace("{NAME}", item.Name).Replace("{PATH}", item.FullName).Replace("{SIZE}", item.SizeItem);
+                    item.Rename(newName);
+                }
+            }
+
+            UpdatePanels();
         }
 
         private void CopyFastKeyWindowsOnClick(object sender, RoutedEventArgs e)
@@ -512,7 +514,7 @@ namespace RAMCommander
                 listViewItem.Background =
                     new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColor));
             else
-                listViewItem.Background = new SolidColorBrush(System.Windows.Media.Colors.White);
+                listViewItem.Background = new SolidColorBrush(Colors.White);
         }
 
         private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)

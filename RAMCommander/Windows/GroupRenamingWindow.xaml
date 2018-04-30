@@ -1,0 +1,23 @@
+﻿<Window x:Class="RAMCommander.Windows.GroupRenamingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RAMCommander.Windows"
+        mc:Ignorable="d"
+        Title="GroupRenamingWindow" Height="200" Width="700">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Grid.Column="0" Name="HelpBox" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
+        <TextBox Grid.Row="0" Grid.Column="1" Name="NameBox" TextAlignment="Center" VerticalContentAlignment="Center"></TextBox>
+        <Button Grid.Row="1" Grid.Column="0" Name="CancelButton" Content="Cancel"></Button>
+        <Button Grid.Row="1" Grid.Column="1" Name="OkButton" Content="OK"></Button>
+    </Grid>
+</Window>
