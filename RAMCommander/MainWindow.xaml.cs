@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -11,6 +13,7 @@ using System.Windows.Media;
 using Lib;
 using Lib.ItemsTypes;
 using Microsoft.VisualBasic.FileIO;
+using PainlessHttp.Serializer.JsonNet;
 using RAMCommander.Windows;
 
 namespace RAMCommander
@@ -27,19 +30,16 @@ namespace RAMCommander
         private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
-        public string ImageRefreshSource;
 
         public MainWindow()
         {
             Closing += (sender, args) =>
             {
-                if (File.Exists("instances.txt"))
-                    File.Delete("instance.txt");
-                File.WriteAllLines("instance.txt",
-                    new[]
-                    {
-                        FirstPanelPath.Text, SecondPanelPath.Text, SettingsBackup.ActivePanelColor, SettingsBackup.SelectedItemColor
-                    });
+                if (File.Exists(SettingsBackup.SettingsFileName))
+                    File.Delete(SettingsBackup.SettingsFileName);
+                JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
+                SettingsBackup settingsBackup = new SettingsBackup{FirstPanelPath = FirstPanelPath.Text, SecondPanelPath = SecondPanelPath.Text};
+                File.WriteAllText(SettingsBackup.SettingsFileName, javaScriptSerializer.Serialize(settingsBackup));
             };
             InitializeComponent();
 
@@ -60,7 +60,8 @@ namespace RAMCommander
 
             _focusedStyle = new Style(typeof(Control));
             _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush(
+                    (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
             //TODO: Change font to bold
 
             _standardStyle = new Style(typeof(Control));
@@ -113,21 +114,18 @@ namespace RAMCommander
             SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
             #endregion
+            
 
-            string firstPath = @"C:\";
-            string secondPath = @"C:\";
-
-            if (File.Exists("instance.txt"))
+            if (File.Exists("settings.json"))
             {
-                firstPath = File.ReadAllLines("instance.txt")[0];
-                secondPath = File.ReadAllLines("instance.txt")[1];
-                SettingsBackup.ActivePanelColor = File.ReadAllLines("instance.txt")[2];
-                SettingsBackup.SelectedItemColor = File.ReadAllLines("instance.txt")[3];
+                SettingsBackup settingsBackup = (SettingsBackup) NewtonSoft.Deserialize(File.ReadAllText("settings.json"), typeof(SettingsBackup));
                 CheckPanelFocus();
             }
+            else
+                SettingsBackup.SetDefaults();
 
-            FillTable(true, firstPath);
-            FillTable(false, secondPath);
+            FillTable(true, SettingsBackup.FirstPanelPathStatic);
+            FillTable(false, SettingsBackup.SecondPanelPathStatic);
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
@@ -139,10 +137,12 @@ namespace RAMCommander
             if ((bool) groupRenamingWindow.ShowDialog())
             {
                 string template = groupRenamingWindow.NewName;
-                List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+                List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                    .Where(item => item.IsChecked).ToList();
                 foreach (Item item in items)
                 {
-                    string newName = template.Replace("{DATE}", item.DateModified).Replace("{NAME}", item.Name).Replace("{PATH}", item.FullName).Replace("{SIZE}", item.SizeItem);
+                    string newName = template.Replace("{DATE}", item.DateModified).Replace("{NAME}", item.Name)
+                        .Replace("{PATH}", item.FullName).Replace("{SIZE}", item.SizeItem);
                     item.Rename(newName);
                 }
             }
@@ -153,16 +153,17 @@ namespace RAMCommander
         private void CopyFastKeyWindowsOnClick(object sender, RoutedEventArgs e)
         {
             string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
-            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
 
             //Windows built-in copying
             foreach (Item item in items)
-            {
                 if (item is FileItem)
-                    FileSystem.CopyFile(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs, UICancelOption.DoNothing);
+                    FileSystem.CopyFile(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs,
+                        UICancelOption.DoNothing);
                 else if (item is DirectoryItem)
-                    FileSystem.CopyDirectory(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs, UICancelOption.DoNothing);
-            }
+                    FileSystem.CopyDirectory(item.FullName, Path.Combine(newPath, item.Name), UIOption.AllDialogs,
+                        UICancelOption.DoNothing);
 
             UpdatePanels();
         }
@@ -170,7 +171,8 @@ namespace RAMCommander
         private void MoveFastKeyOnClick(object sender, RoutedEventArgs e)
         {
             string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
-            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
 
 
             OperationWindow operationWindow = new OperationWindow("Moving");
@@ -183,7 +185,8 @@ namespace RAMCommander
 
         private void RenameFastKeyOnClick(object sender, RoutedEventArgs e)
         {
-            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
 
             foreach (Item item in items)
             {
@@ -199,34 +202,53 @@ namespace RAMCommander
         {
             ListView listView = (ListView) sender;
             _isFirstFocused = listView.Name == FirstPanel.Name;
+            SettingsBackup settingsBackup = new SettingsBackup();
 
             if (!Keyboard.IsKeyDown(Key.LeftCtrl)) return;
-           
+
             if (e.Delta > 0)
             {
-                listView.FontSize += 1;
+                if (_isFirstFocused)
+                {
+                    settingsBackup.FontSizeFirstPanel += 5;
+                    settingsBackup.ImageSizeFirstPanel += 10;
+                }
+                else
+                {
+                    settingsBackup.FontSizeSecondPanel += 5;
+                    settingsBackup.ImageSizeSecondPanel += 10;
+                }
+
+                listView.FontSize = _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
 
                 listView.ItemsSource = null;
 
-                foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
-                {
-                    item.ImageSize += 1;
-                }
+                foreach (Item item in _isFirstFocused ? _firstItems : _secondItems) item.ImageSize = (_isFirstFocused ? settingsBackup.ImageSizeFirstPanel : settingsBackup.ImageSizeSecondPanel);
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
-
             }
             else if (e.Delta < 0)
             {
-                if (listView.FontSize > 1)
-                listView.FontSize -= 1;
+                if (_isFirstFocused)
+                {
+                    if (settingsBackup.FontSizeFirstPanel > 5)
+                        settingsBackup.FontSizeFirstPanel -= 5;
+                    if (settingsBackup.ImageSizeFirstPanel > 10)
+                        settingsBackup.ImageSizeFirstPanel -= 10;
+                }
+                else
+                {
+                    if (settingsBackup.FontSizeSecondPanel > 5)
+                        settingsBackup.FontSizeSecondPanel -= 5;
+                    if (settingsBackup.ImageSizeSecondPanel > 10)
+                        settingsBackup.ImageSizeSecondPanel -= 10;
+                }
+
+                listView.FontSize = _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
 
                 listView.ItemsSource = null;
 
-                foreach (Item item in (_isFirstFocused ? _firstItems : _secondItems))
-                {
-                    if (item.ImageSize > 10)
-                    item.ImageSize -= 1;
-                }
+                foreach (Item item in _isFirstFocused ? _firstItems : _secondItems)
+                    item.ImageSize = (_isFirstFocused ? settingsBackup.ImageSizeFirstPanel : settingsBackup.ImageSizeSecondPanel);
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
             }
         }
@@ -235,12 +257,13 @@ namespace RAMCommander
         {
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog();
-            if ((bool) settingsWindow.DialogResult) CheckPanelFocus();
+            if ((bool) settingsWindow.DialogResult) UpdatePanels();
         }
 
         private void DeleteFastKeyOnClick(object sender, RoutedEventArgs e)
         {
-            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
             OperationWindow operationWindow = new OperationWindow("Deleting");
             operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
             operationWindow.Show();
@@ -252,7 +275,8 @@ namespace RAMCommander
         private void CopyFastKeyOnClick(object sender, RoutedEventArgs e)
         {
             string newPath = (_isFirstFocused ? SecondPanelPath : FirstPanelPath).Text;
-            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>().Where(item => item.IsChecked).ToList();
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
 
             OperationWindow operationWindow = new OperationWindow("Copying");
             operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
@@ -374,7 +398,8 @@ namespace RAMCommander
         {
             Style FocusedStyle = new Style(typeof(Control));
             FocusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor)))); //fae1c0
+                new SolidColorBrush(
+                    (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
 
             if (_isFirstFocused)
             {
@@ -438,7 +463,7 @@ namespace RAMCommander
             string path = ((TextBox) sender).Text;
 
             if (Directory.Exists(path))
-                FillTable(name == "FirstPanelPath", path);
+                FillTable(name == "FirstPanelPathStatic", path);
             else
                 MessageBox.Show($"Directory {path} don't exists");
         }
@@ -475,9 +500,11 @@ namespace RAMCommander
                     for (int i = 0; i < _firstItems.Count; i++)
                     {
                         _firstItems[i].Index = i;
-                        _firstItems[i].ImageSize = SettingsBackup.ImageSizeFirstPanel;
+                        _firstItems[i].ImageSize = SettingsBackup.ImageSizeFirstPanelStatic;
                     }
+
                     FirstPanelPath.Text = _firstDirectoryItem.FullName;
+                    FirstPanel.FontSize = SettingsBackup.FontSizeFirstPanelStatic;
                     FirstPanel.ItemsSource = _firstItems;
                 }
                 else
@@ -488,9 +515,11 @@ namespace RAMCommander
                     for (int i = 0; i < _secondItems.Count; i++)
                     {
                         _secondItems[i].Index = i;
-                        _secondItems[i].ImageSize = SettingsBackup.ImageSizeSecondPanel;
+                        _secondItems[i].ImageSize = SettingsBackup.ImageSizeSecondPanelStatic;
                     }
+
                     SecondPanelPath.Text = _seconDirectoryItem.FullName;
+                    SecondPanel.FontSize = SettingsBackup.FontSizeSecondPanelStatic;
                     SecondPanel.ItemsSource = _secondItems;
                 }
             }
@@ -498,10 +527,6 @@ namespace RAMCommander
             {
                 MessageBox.Show(e.Message);
             }
-        }
-
-        private void CheckBoxTemplate_OnChecked(object sender, RoutedEventArgs e)
-        {
         }
 
         private void CheckBoxTemplate_OnClick(object sender, RoutedEventArgs e)
@@ -512,14 +537,9 @@ namespace RAMCommander
                     int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
                 listViewItem.Background =
-                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColor));
+                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic));
             else
                 listViewItem.Background = new SolidColorBrush(Colors.White);
-        }
-
-        private void UIElement_OnMouseEnter(object sender, MouseEventArgs e)
-        {
-            //if 
         }
 
         private void ColumnSort(object sender, RoutedEventArgs e)

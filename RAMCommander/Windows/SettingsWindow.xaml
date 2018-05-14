@@ -9,31 +9,34 @@
         Title="SettingsWindow" Height="350" Width="500">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        
+
         <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
 
-            <Button Content="Activated panel color" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Name="ActivatedPanelColorButton" Padding="5" ></Button>
-            <Button Content="Selected item color" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Name="SelectedItemColorButton" Padding="5"></Button>
-            <Button Content="Reset defaults" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Name="ResetButton" Padding="5"></Button>
+            <Button Content="Activated panel color" VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center" Name="ActivatedPanelColorButton" Padding="5" />
+            <Button Content="Selected item color" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                    Name="SelectedItemColorButton" Padding="5" />
+            <Button Content="Reset defaults" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                    Name="ResetButton" Padding="5" />
         </StackPanel>
         <Grid Column="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="100"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="100" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition />
+                <RowDefinition Height="50" />
             </Grid.RowDefinitions>
-            
-            <TextBlock Text="Choose color:" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-            <xctk:ColorCanvas Grid.Row="0" Grid.Column="1" Name="ColorPickerCanvas"></xctk:ColorCanvas>
-            <Button Grid.Row="1" Grid.Column="0" Name="CancelButton" Content="Cancel"></Button>
-            <Button Grid.Row="1" Grid.Column="1" Name="OkButton" Content="OK"></Button>
+
+            <TextBlock Text="Choose color:" TextAlignment="Center" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" />
+            <xctk:ColorCanvas Grid.Row="0" Grid.Column="1" Name="ColorPickerCanvas" />
+            <Button Grid.Row="1" Grid.Column="0" Name="CancelButton" Content="Cancel" />
+            <Button Grid.Row="1" Grid.Column="1" Name="OkButton" Content="OK" />
         </Grid>
     </Grid>
 </Window>
-

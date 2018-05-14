@@ -52,7 +52,7 @@
             <TextBox Grid.Column="0" Grid.Row="0" Name="FirstPanelPath" />
             <!--<Image Source="{Binding ImageRefreshSource}" Grid.Column="1" Grid.Row="0" Width="15" Height="15"/>-->
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                      Name="FirstPanelButton"  Height="20" Width="20" />
+                    Name="FirstPanelButton" Height="20" Width="20" />
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel">
                 <ListView.View>
                     <GridView x:Name="FirstGridView" AllowsColumnReorder="False">
@@ -78,7 +78,8 @@
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="{Binding ImageSize}" Height="{Binding ImageSize}"
+                                                   VerticalAlignment="Center" Width="{Binding ImageSize}"
+                                                   Height="{Binding ImageSize}"
                                                    Margin="0, 0, 10, 0" />
                                             <TextBlock Text="{Binding Name}" />
                                         </StackPanel>
@@ -115,7 +116,7 @@
 
             <TextBox Grid.Column="0" Grid.Row="0" Name="SecondPanelPath" />
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Name="SecondPanelButton"  Height="20" Width="20" />
+                    Name="SecondPanelButton" Height="20" Width="20" />
 
             <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel">
                 <ListView.View>
@@ -142,7 +143,8 @@
                                                 </StackPanel>
                                             </StackPanel.ToolTip>
                                             <Image HorizontalAlignment="Center" Source="{Binding TypeImageSource}"
-                                                   VerticalAlignment="Center" Width="{Binding ImageSize}" Height="{Binding ImageSize}"
+                                                   VerticalAlignment="Center" Width="{Binding ImageSize}"
+                                                   Height="{Binding ImageSize}"
                                                    Margin="0, 0, 10, 0" />
                                             <TextBlock Text="{Binding Name}" />
                                         </StackPanel>

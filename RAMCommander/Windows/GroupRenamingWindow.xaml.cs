@@ -1,26 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace RAMCommander.Windows
 {
     /// <summary>
-    /// Interaction logic for GroupRenamingWindow.xaml
+    ///     Interaction logic for GroupRenamingWindow.xaml
     /// </summary>
     public partial class GroupRenamingWindow : Window
     {
-        public string NewName => NameBox.Text;
-
         public GroupRenamingWindow()
         {
             InitializeComponent();
@@ -33,10 +20,12 @@ namespace RAMCommander.Windows
                            "{PATH} - full path to item\n" +
                            "{SIZE} - item size\n" +
                            "Example: \"{NAME}{SIZE}additionalWord\"";
-            
+
             OkButton.Click += (sender, args) => DialogResult = true;
             CancelButton.Click += (sender, args) => DialogResult = false;
         }
+
+        public string NewName => NameBox.Text;
 
         private void NameBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
         {

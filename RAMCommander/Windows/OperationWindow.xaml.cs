@@ -14,8 +14,6 @@ namespace RAMCommander.Windows
         private const string CURRENTOPERATION = "Current operation: ";
         private const string CURRFILE = "Current file: ";
 
-        public event EventHandler OnFinish; 
-
         public OperationWindow(string operationName)
         {
             InitializeComponent();
@@ -26,16 +24,17 @@ namespace RAMCommander.Windows
             CurrentItemProgressBar.Minimum = 0;
             CurrentItemProgressBar.Maximum = 100;
             CurrentItemProgressBar.Value = 0;
-        }   
+        }
 
         public int CurrentItemProgress { get; set; }
 
         public int TotalProgress { get; set; }
 
+        public event EventHandler OnFinish;
+
         public async void Delete(List<Item> items)
         {
             foreach (Item item in items)
-            {
                 switch (item)
                 {
                     case DirectoryItem _:
@@ -46,7 +45,6 @@ namespace RAMCommander.Windows
                         item.Delete();
                         break;
                 }
-            }
 
             CurrentItemProgressBar.Value = 100;
             CurrentItemProgressText.Text = "Finished deleting";
@@ -56,7 +54,6 @@ namespace RAMCommander.Windows
         public async void Move(List<Item> items, string destination)
         {
             foreach (Item item in items)
-            {
                 switch (item)
                 {
                     case DirectoryItem _:
@@ -68,7 +65,6 @@ namespace RAMCommander.Windows
                         item.Move(destination);
                         break;
                 }
-            }
 
             CurrentItemProgressBar.Value = 100;
             CurrentItemProgressText.Text = "Finished moving";
@@ -85,7 +81,11 @@ namespace RAMCommander.Windows
                         Copy(new DirectoryItem(item.FullName, true).Subs, Path.Combine(destination, item.Name));
                         break;
                     case FileItem _:
-                        var progress = new Progress<double>(d => { CurrentItemProgressBar.Value = d; CurrentItemProgressText.Text = $"{CURRFILE} {item.Name} {d:f2}%"; });
+                        var progress = new Progress<double>(d =>
+                        {
+                            CurrentItemProgressBar.Value = d;
+                            CurrentItemProgressText.Text = $"{CURRFILE} {item.Name} {d:f2}%";
+                        });
                         await item.Copy(progress, destination);
                         break;
                 }

@@ -1,27 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using Microsoft.Win32;
 
 namespace RAMCommander.Windows
 {
     /// <summary>
-    /// Interaction logic for ChooseNameWindow.xaml
+    ///     Interaction logic for ChooseNameWindow.xaml
     /// </summary>
     public partial class ChooseNameWindow : Window
     {
-        public string NewName => NameBox.Text;
-
         public ChooseNameWindow(string operationName, string oldName = "")
         {
             InitializeComponent();
@@ -33,6 +19,8 @@ namespace RAMCommander.Windows
             OkButton.Click += (sender, args) => DialogResult = true;
             CancelButton.Click += (sender, args) => DialogResult = false;
         }
+
+        public string NewName => NameBox.Text;
 
         private void NameBoxOnPreviewKeyDown(object sender, KeyEventArgs e)
         {

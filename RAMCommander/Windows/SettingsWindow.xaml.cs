@@ -15,20 +15,21 @@ namespace RAMCommander.Windows
         {
             InitializeComponent();
 
-            ColorPickerCanvas.SelectedColor = (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor);
+            ColorPickerCanvas.SelectedColor =
+                (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic);
 
             ResetButton.Click += (sender, args) =>
             {
-                SettingsBackup.SetDeafaults();
+                SettingsBackup.SetDefaults();
                 switch (_choosedItemId)
                 {
                     case 0:
                         ColorPickerCanvas.SelectedColor =
-                            (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor);
+                            (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic);
                         break;
                     case 1:
                         ColorPickerCanvas.SelectedColor =
-                            (Color?) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColor);
+                            (Color?) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic);
                         break;
                 }
             };
@@ -36,13 +37,15 @@ namespace RAMCommander.Windows
             ActivatedPanelColorButton.Click += (sender, args) =>
             {
                 _choosedItemId = 0;
-                ColorPickerCanvas.SelectedColor = (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColor);
+                ColorPickerCanvas.SelectedColor =
+                    (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic);
             };
 
             SelectedItemColorButton.Click += (sender, args) =>
             {
                 _choosedItemId = 1;
-                ColorPickerCanvas.SelectedColor = (Color?) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColor);
+                ColorPickerCanvas.SelectedColor =
+                    (Color?) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic);
             };
 
             OkButton.Click += (sender, args) => DialogResult = true;
@@ -56,10 +59,10 @@ namespace RAMCommander.Windows
             switch (_choosedItemId)
             {
                 case 0:
-                    SettingsBackup.ActivePanelColor = ColorPickerCanvas.SelectedColor.ToString();
+                    SettingsBackup.ActivePanelColorStatic = ColorPickerCanvas.SelectedColor.ToString();
                     break;
                 case 1:
-                    SettingsBackup.SelectedItemColor = ColorPickerCanvas.SelectedColor.ToString();
+                    SettingsBackup.SelectedItemColorStatic = ColorPickerCanvas.SelectedColor.ToString();
                     break;
             }
         }
