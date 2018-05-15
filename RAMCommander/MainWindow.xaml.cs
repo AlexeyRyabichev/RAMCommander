@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Json;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +20,8 @@ namespace RAMCommander
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
+    // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : Window
     {
         private readonly Style _focusedStyle;
@@ -59,10 +60,19 @@ namespace RAMCommander
             //SecondPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
 
             _focusedStyle = new Style(typeof(Control));
-            _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush(
-                    (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
-            //TODO: Change font to bold
+            try
+            {
+                _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                    new SolidColorBrush(
+                        // ReSharper disable once PossibleNullReferenceException
+                        (Color)ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
+            }
+            catch (NullReferenceException)
+            {
+                MessageBox.Show("Can't find standart color");
+                _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                    new SolidColorBrush(Colors.Blue)));
+            }
 
             _standardStyle = new Style(typeof(Control));
             _standardStyle.Setters.Add(new Setter(BackgroundProperty,
@@ -118,7 +128,7 @@ namespace RAMCommander
 
             if (File.Exists("settings.json"))
             {
-                SettingsBackup settingsBackup = (SettingsBackup) NewtonSoft.Deserialize(File.ReadAllText("settings.json"), typeof(SettingsBackup));
+                SettingsBackup unused = (SettingsBackup) NewtonSoft.Deserialize(File.ReadAllText("settings.json"), typeof(SettingsBackup));
                 CheckPanelFocus();
             }
             else
@@ -134,6 +144,7 @@ namespace RAMCommander
         private void RenameTemplateFastKeyOnClick(object sender, RoutedEventArgs e)
         {
             GroupRenamingWindow groupRenamingWindow = new GroupRenamingWindow();
+            // ReSharper disable once PossibleInvalidOperationException
             if ((bool) groupRenamingWindow.ShowDialog())
             {
                 string template = groupRenamingWindow.NewName;
@@ -191,6 +202,7 @@ namespace RAMCommander
             foreach (Item item in items)
             {
                 ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename file", item.Name);
+                // ReSharper disable once PossibleInvalidOperationException
                 if ((bool) chooseNameWindow.ShowDialog())
                     item.Rename(chooseNameWindow.NewName);
             }
@@ -257,6 +269,7 @@ namespace RAMCommander
         {
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog();
+            // ReSharper disable once PossibleInvalidOperationException
             if ((bool) settingsWindow.DialogResult) UpdatePanels();
         }
 
@@ -308,7 +321,6 @@ namespace RAMCommander
 
         private void PanelOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
-            bool flag = false;
             Item item = null;
             try
             {
@@ -351,15 +363,6 @@ namespace RAMCommander
             }
         }
 
-        private void CopyPreviewOnClick(object o, RoutedEventArgs routedEventArgs)
-        {
-            OperationWindow operationWindow = new OperationWindow("Copying");
-            operationWindow.Show();
-
-            operationWindow.CurrentItemProgress = 50;
-            operationWindow.TotalProgress = 25;
-        }
-
         private void Rename(Item item, bool isFirst)
         {
             ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename: ", item.Name);
@@ -368,14 +371,6 @@ namespace RAMCommander
                 item.Rename(chooseNameWindow.NewName);
                 FillTable(isFirst, isFirst ? FirstPanelPath.Text : SecondPanelPath.Text);
             }
-        }
-
-        private void Delete()
-        {
-            ListView currentListView = _isFirstFocused ? FirstPanel : SecondPanel;
-            Item currentItem = (Item) currentListView.SelectedItem;
-            currentItem.Delete();
-            FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
         private void CreateNewFolder()
@@ -396,20 +391,15 @@ namespace RAMCommander
 
         private void CheckPanelFocus()
         {
-            Style FocusedStyle = new Style(typeof(Control));
-            FocusedStyle.Setters.Add(new Setter(BackgroundProperty,
-                new SolidColorBrush(
-                    (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
-
             if (_isFirstFocused)
             {
-                FirstGridView.ColumnHeaderContainerStyle = FocusedStyle;
+                FirstGridView.ColumnHeaderContainerStyle = _focusedStyle;
                 SecondGridView.ColumnHeaderContainerStyle = _standardStyle;
             }
             else
             {
                 FirstGridView.ColumnHeaderContainerStyle = _standardStyle;
-                SecondGridView.ColumnHeaderContainerStyle = FocusedStyle;
+                SecondGridView.ColumnHeaderContainerStyle = _focusedStyle;
             }
         }
 
@@ -440,7 +430,6 @@ namespace RAMCommander
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
         {
-            ListView listView = (ListView) sender;
             CheckPanelFocus();
 
             bool isFirst = ((ListView) sender).Name == "FirstPanel";
@@ -489,7 +478,7 @@ namespace RAMCommander
         {
             try
             {
-                DirectoryItem testDirectoryItem = new DirectoryItem(path);
+                DirectoryItem unused = new DirectoryItem(path);
                 //fails here if no access to directory
 
                 if (isFirst)
@@ -536,8 +525,18 @@ namespace RAMCommander
                 (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
                     int.Parse(checkBox.Uid));
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
-                listViewItem.Background =
-                    new SolidColorBrush((Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic));
+                try
+                {
+                    listViewItem.Background =
+                        // ReSharper disable once PossibleNullReferenceException
+                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic));
+                }
+                catch (NullReferenceException)
+                {
+                    MessageBox.Show("Can't find standart color");
+                    listViewItem.Background =
+                        new SolidColorBrush(Colors.Blue);
+                }
             else
                 listViewItem.Background = new SolidColorBrush(Colors.White);
         }
