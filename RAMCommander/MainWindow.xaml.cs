@@ -187,7 +187,11 @@ namespace RAMCommander
 
 
             OperationWindow operationWindow = new OperationWindow("Moving");
-            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
+            operationWindow.OnFinish += (o, s) =>
+            {
+                UpdatePanels();
+                operationWindow.Close();
+            };
             operationWindow.Show();
             operationWindow.Move(items, newPath);
 
@@ -278,7 +282,11 @@ namespace RAMCommander
             List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
                 .Where(item => item.IsChecked).ToList();
             OperationWindow operationWindow = new OperationWindow("Deleting");
-            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
+            operationWindow.OnFinish += (o, s) =>
+            {
+                UpdatePanels(); 
+                operationWindow.Close();
+            };
             operationWindow.Show();
             operationWindow.Delete(items);
 
@@ -292,7 +300,11 @@ namespace RAMCommander
                 .Where(item => item.IsChecked).ToList();
 
             OperationWindow operationWindow = new OperationWindow("Copying");
-            operationWindow.OnFinish += (o, s) => { UpdatePanels(); };
+            operationWindow.OnFinish += (o, s) =>
+            {
+                UpdatePanels();
+                operationWindow.Close();
+            };
             operationWindow.Show();
             operationWindow.Copy(items, newPath);
         }
@@ -377,7 +389,12 @@ namespace RAMCommander
         {
             DirectoryItem directoryItem =
                 new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
-            directoryItem.Create(directoryItem.FullName, "CreatedFolder", Item.DIRECTORY);
+
+            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Create new folder");
+            if (chooseNameWindow.ShowDialog() == true)
+            {
+                directoryItem.Create(directoryItem.FullName, chooseNameWindow.NewName, Item.DIRECTORY);
+            }
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
@@ -385,7 +402,11 @@ namespace RAMCommander
         {
             DirectoryItem directoryItem =
                 new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
-            directoryItem.Create(directoryItem.FullName, "CreatedFile.txt", Item.FILE);
+            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Create new file");
+            if (chooseNameWindow.ShowDialog() == true)
+            {
+                directoryItem.Create(directoryItem.FullName, chooseNameWindow.NewName, Item.FILE);
+            }
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
