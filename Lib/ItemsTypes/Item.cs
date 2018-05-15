@@ -108,7 +108,14 @@ namespace Lib.ItemsTypes
                     if (File.Exists(Path.Combine(PathToParent, newName)))
                         MessageBox.Show("File already exists");
                     else
-                        File.Move(item.FullName, Path.Combine(PathToParent, newName.Replace(":", "-").Replace("/", "_")));
+                        try
+                        {
+                            File.Move(item.FullName, Path.Combine(PathToParent, newName.Replace(":", "-").Replace("/", "_")));
+                        }
+                        catch (Exception)
+                        {
+                            MessageBox.Show("Sorry, wrong file name");
+                        }
                 else
                     MessageBox.Show("File don't exists");
             else if (item is DirectoryItem)
