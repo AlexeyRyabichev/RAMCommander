@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
@@ -120,6 +121,7 @@ namespace RAMCommander
             MoveFastKey.Click += MoveFastKeyOnClick;
             CopyFastKeyWindows.Click += CopyFastKeyWindowsOnClick;
             RenameTemplateFastKey.Click += RenameTemplateFastKeyOnClick;
+            CheckHashSums.Click += CheckHashSumsOnClick;
 
             SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
@@ -139,6 +141,40 @@ namespace RAMCommander
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void CheckHashSumsOnClick(object sender, RoutedEventArgs e)
+        {
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
+
+            List<byte[]> hashes = new List<byte[]>();
+
+            MessageBox.Show("Please, wait");
+
+            foreach (Item item in items)
+            {
+                if (item is DirectoryItem || item is BackItem)
+                    continue;
+                MD5 md5 = MD5.Create();
+                var stream = File.OpenRead(item.FullName);
+                hashes.Add(md5.ComputeHash(stream));
+            }
+
+            if (hashes.Count <= 1)
+            {
+                MessageBox.Show("Add more files to compare");
+                return;
+            }
+
+            for (int i = 1; i < hashes.Count; i++)
+            {
+                if (hashes[0].SequenceEqual(hashes[i])) continue;
+                MessageBox.Show("Hashes aren't equal");
+                return;
+            }
+
+            MessageBox.Show("Hashes are equal");
         }
 
         private void RenameTemplateFastKeyOnClick(object sender, RoutedEventArgs e)

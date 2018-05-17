@@ -36,6 +36,7 @@
             <MenuItem Header="Rename" Name="RenameFastKey" />
             <MenuItem Header="Template renaming" Name="RenameTemplateFastKey" />
             <MenuItem Header="Delete" Name="DeleteFastKey" />
+            <MenuItem Header="Check hash sums" Name="CheckHashSums" />
         </Menu>
 
         <Grid Grid.Row="2" Column="0">
