@@ -35,12 +35,31 @@ namespace RAMCommander
 
         public MainWindow()
         {
+            Loaded += (sender, args) =>
+            {
+                foreach (string bookmark in SettingsBackup.BookmarksListStatic)
+                {
+                    MenuItem deleteItem = new MenuItem {Header = "Delete"};
+                    MenuItem openItem = new MenuItem {Header = "Open"};
+
+                    deleteItem.Click += DeleteItemOnClick;
+                    openItem.Click += OpenItemOnClick;
+
+                    MenuItem item = new MenuItem {Header = bookmark};
+
+                    item.Items.Add(deleteItem);
+                    item.Items.Add(openItem);
+
+                    BookmarksMenuItem.Items.Add(item);
+                }
+            };
             Closing += (sender, args) =>
             {
                 if (File.Exists(SettingsBackup.SettingsFileName))
                     File.Delete(SettingsBackup.SettingsFileName);
                 JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
-                SettingsBackup settingsBackup = new SettingsBackup{FirstPanelPath = FirstPanelPath.Text, SecondPanelPath = SecondPanelPath.Text};
+                List<string> bookmarksList = (from MenuItem menuItem in BookmarksMenuItem.Items select menuItem.Header.ToString()).ToList();
+                SettingsBackup settingsBackup = new SettingsBackup{FirstPanelPath = FirstPanelPath.Text, SecondPanelPath = SecondPanelPath.Text, BookmarksList = bookmarksList};
                 File.WriteAllText(SettingsBackup.SettingsFileName, javaScriptSerializer.Serialize(settingsBackup));
             };
             InitializeComponent();
@@ -50,6 +69,12 @@ namespace RAMCommander
 
             FirstPanelButton.Content = "Refresh";
             SecondPanelButton.Content = "Refresh";
+
+            AddToBookmarksFirstButton.Content = "Add to bookmarks";
+            AddToBookmarksSecondButton.Content = "Add to bookmarks";
+
+            AddToBookmarksFirstButton.Click += AddToBookmarksFirstButtonOnClick;
+            AddToBookmarksSecondButton.Click += AddToBookmarksSecondButtonOnClick;
 
             FirstPanelButton.Click += (sender, args) => FillTable(true, FirstPanelPath.Text);
             SecondPanelButton.Click += (sender, args) => FillTable(false, SecondPanelPath.Text);
@@ -141,6 +166,48 @@ namespace RAMCommander
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void AddToBookmarksSecondButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem deleteItem = new MenuItem {Header = "Delete"};
+            MenuItem openItem = new MenuItem {Header = "Open"};
+
+            deleteItem.Click += DeleteItemOnClick;
+            openItem.Click += OpenItemOnClick;
+
+            MenuItem item = new MenuItem {Header = SecondPanelPath.Text};
+
+            item.Items.Add(deleteItem);
+            item.Items.Add(openItem);
+
+            BookmarksMenuItem.Items.Add(item);
+        }
+
+        private void OpenItemOnClick(object sender, RoutedEventArgs e)
+        {
+            FillTable(_isFirstFocused, ((MenuItem) ((MenuItem)sender).Parent).Header.ToString());
+        }
+
+        private void DeleteItemOnClick(object sender, EventArgs e)
+        {
+            BookmarksMenuItem.Items.Remove(((MenuItem) sender).Parent);
+        }
+
+        private void AddToBookmarksFirstButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            MenuItem deleteItem = new MenuItem { Header = "Delete" };
+            MenuItem openItem = new MenuItem { Header = "Open" };
+
+            deleteItem.Click += DeleteItemOnClick;
+            openItem.Click += OpenItemOnClick;
+
+            MenuItem item = new MenuItem { Header = FirstPanelPath.Text };
+
+            item.Items.Add(deleteItem);
+            item.Items.Add(openItem);
+
+            BookmarksMenuItem.Items.Add(item);
         }
 
         private void CheckHashSumsOnClick(object sender, RoutedEventArgs e)

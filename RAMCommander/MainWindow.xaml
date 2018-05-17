@@ -25,6 +25,7 @@
                 <MenuItem Header="New" Name="NewFolderMenuItem" />
             </MenuItem>
             <MenuItem Header="Settings" Name="SettingsMenuItem" />
+            <MenuItem Header="Bookmarks" Name="BookmarksMenuItem" />
         </Menu>
 
         <Menu Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">
@@ -43,6 +44,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="30px" />
+                <ColumnDefinition Width="30px"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="20px" />
@@ -54,7 +56,9 @@
             <!--<Image Source="{Binding ImageRefreshSource}" Grid.Column="1" Grid.Row="0" Width="15" Height="15"/>-->
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                     Name="FirstPanelButton" Height="20" Width="20" />
-            <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="FirstPanel">
+            <Button Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Name="AddToBookmarksFirstButton" Height="20" Width="20" />
+            <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Name="FirstPanel">
                 <ListView.View>
                     <GridView x:Name="FirstGridView" AllowsColumnReorder="False">
                         <GridView.Columns>
@@ -108,18 +112,22 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition Width="30px" />
+                <ColumnDefinition Width="30px" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20px" />
+                <RowDefinition Height="6.333" />
+                <RowDefinition Height="13.667"/>
                 <RowDefinition />
                 <RowDefinition Height="20px" />
             </Grid.RowDefinitions>
 
-            <TextBox Grid.Column="0" Grid.Row="0" Name="SecondPanelPath" />
+            <TextBox Grid.Column="0" Grid.Row="0" Name="SecondPanelPath" Grid.ColumnSpan="2" Margin="0,0,29.778,0" Grid.RowSpan="2" />
             <Button Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                    Name="SecondPanelButton" Height="20" Width="20" />
+                    Name="SecondPanelButton" Height="20" Width="20" Margin="5.222,0,4.778,0" Grid.RowSpan="2" />
+            <Button Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Name="AddToBookmarksSecondButton" Height="20" Width="20" Margin="5.222,0,4.778,0" Grid.RowSpan="2" />
 
-            <ListView Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Name="SecondPanel">
+            <ListView Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="3" Name="SecondPanel" Margin="0,0,-0.222,19.667" Grid.RowSpan="2">
                 <ListView.View>
                     <GridView x:Name="SecondGridView" AllowsColumnReorder="False">
                         <GridView.Columns>
@@ -166,7 +174,7 @@
                 </ListView.View>
             </ListView>
 
-            <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Name="SecondInfo" />
+            <TextBlock Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="3" Name="SecondInfo" Margin="0,0.333,29.778,-0.333" />
         </Grid>
     </Grid>
 </Window>

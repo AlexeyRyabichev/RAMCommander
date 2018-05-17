@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Lib.Properties;
 
@@ -15,6 +16,13 @@ namespace Lib
         public static string SecondPanelPathStatic = @"C:\";
         public static int FontSizeFirstPanelStatic = 10;
         public static int FontSizeSecondPanelStatic = 10;
+        public static List<string> BookmarksListStatic = new List<string>();
+
+        public List<string> BookmarksList
+        {
+            get => BookmarksListStatic;
+            set => BookmarksListStatic = value;
+        }
 
         public SettingsBackup()
         {
@@ -68,7 +76,7 @@ namespace Lib
             set => SecondPanelPathStatic = value;
         }
 
-        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel, int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel, int fontSizeSecondPanel)
+        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel, int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel, int fontSizeSecondPanel, List<string> bookmarksList)
         {
             ActivePanelColor = activePanelColor;
             SelectedItemColor = selectedItemColor;
@@ -78,6 +86,7 @@ namespace Lib
             SecondPanelPath = secondPanelPath;
             FontSizeFirstPanel = fontSizeFirstPanel;
             FontSizeSecondPanel = fontSizeSecondPanel;
+            BookmarksList = bookmarksList;
         }
 
         public static void SetDefaults()
