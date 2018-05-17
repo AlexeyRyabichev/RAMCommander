@@ -9,10 +9,11 @@ namespace RAMCommander.Windows
     /// <summary>
     ///     Interaction logic for OperationWindow.xaml
     /// </summary>
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class OperationWindow : Window
     {
-        private const string CURRENTOPERATION = "Current operation: ";
-        private const string CURRFILE = "Current file: ";
+        private static readonly string CURRENTOPERATION = "Current operation: ";
+        private static readonly string CURRFILE = "Current file: ";
 
         public OperationWindow(string operationName)
         {
@@ -32,13 +33,13 @@ namespace RAMCommander.Windows
 
         public event EventHandler OnFinish;
 
-        public async void Delete(List<Item> items)
+        public void Delete(List<Item> items)
         {
             foreach (Item item in items)
                 switch (item)
                 {
                     case DirectoryItem _:
-                        Delete(new DirectoryItem(item.FullName, true).Subs);
+                        Delete(new DirectoryItem(item.FullName).Subs);
                         item.Delete();
                         break;
                     case FileItem _:
@@ -51,7 +52,7 @@ namespace RAMCommander.Windows
             OnFinish?.Invoke(this, null);
         }
 
-        public async void Move(List<Item> items, string destination)
+        public void Move(List<Item> items, string destination)
         {
             foreach (Item item in items)
                 switch (item)
@@ -78,7 +79,7 @@ namespace RAMCommander.Windows
                 {
                     case DirectoryItem _:
                         Directory.CreateDirectory(Path.Combine(destination, item.Name));
-                        Copy(new DirectoryItem(item.FullName, true).Subs, Path.Combine(destination, item.Name));
+                        Copy(new DirectoryItem(item.FullName).Subs, Path.Combine(destination, item.Name));
                         break;
                     case FileItem _:
                         var progress = new Progress<double>(d =>

@@ -9,9 +9,9 @@ namespace Lib.ItemsTypes
 {
     public abstract class Item : IItem, IFunctions
     {
-        public static string DIRECTORY = "Directory";
-        public static string FILE = "File";
-        public static string BACK = "Back";
+        public static readonly string DIRECTORY = "Directory";
+        public static readonly string FILE = "File";
+        public static readonly string BACK = "Back";
 
         public async Task Copy(IProgress<double> progress, string destination)
         {
@@ -85,9 +85,9 @@ namespace Lib.ItemsTypes
                     MessageBox.Show("File don't exists");
             else if (item is DirectoryItem)
                 if (Directory.Exists(item.FullName))
-                    if (new DirectoryItem(item.FullName, true).Subs != null)
+                    if (new DirectoryItem(item.FullName).Subs != null)
                     {
-                        foreach (Item sub in new DirectoryItem(item.FullName, true).Subs)
+                        foreach (Item sub in new DirectoryItem(item.FullName).Subs)
                             sub.Delete();
 
                         Directory.Delete(item.FullName);
