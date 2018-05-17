@@ -1,6 +1,10 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿using System.Drawing;
+using System.Windows;
+using System.Windows.Forms;
 using Lib;
+using Color = System.Windows.Media.Color;
+using ColorConverter = System.Windows.Media.ColorConverter;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace RAMCommander.Windows
 {
@@ -11,10 +15,10 @@ namespace RAMCommander.Windows
     {
         private int _choosedItemId;
 
-        public SettingsWindow()
+        public SettingsWindow(FontFamily currentFont)
         {
             InitializeComponent();
-
+            
             ColorPickerCanvas.SelectedColor =
                 (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic);
 
@@ -46,6 +50,14 @@ namespace RAMCommander.Windows
                 _choosedItemId = 1;
                 ColorPickerCanvas.SelectedColor =
                     (Color?) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic);
+            };
+            ChooseFontFamilyButton.Click += (sender, args) =>
+            {
+                FontDialog dialog = new FontDialog {Font = new Font(currentFont.Source, 20)};
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    SettingsBackup.FontFamilyStatic = new FontFamily(dialog.Font.Name);
+                }
             };
 
             OkButton.Click += (sender, args) => DialogResult = true;

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.Serialization;
 using Lib.Properties;
+using FontFamily = System.Windows.Media.FontFamily;
 
 namespace Lib
 {
@@ -17,6 +19,13 @@ namespace Lib
         public static int FontSizeFirstPanelStatic = 10;
         public static int FontSizeSecondPanelStatic = 10;
         public static List<string> BookmarksListStatic = new List<string>();
+        public static FontFamily FontFamilyStatic;
+
+        public string FontFamily
+        {
+            get => FontFamilyStatic.Source;
+            set => FontFamilyStatic = new FontFamily(value);
+        }
 
         public List<string> BookmarksList
         {
@@ -76,7 +85,7 @@ namespace Lib
             set => SecondPanelPathStatic = value;
         }
 
-        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel, int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel, int fontSizeSecondPanel, List<string> bookmarksList)
+        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel, int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel, int fontSizeSecondPanel, List<string> bookmarksList, FontFamily fontFamily)
         {
             ActivePanelColor = activePanelColor;
             SelectedItemColor = selectedItemColor;
@@ -87,6 +96,7 @@ namespace Lib
             FontSizeFirstPanel = fontSizeFirstPanel;
             FontSizeSecondPanel = fontSizeSecondPanel;
             BookmarksList = bookmarksList;
+            FontFamily = fontFamily.Source;
         }
 
         public static void SetDefaults()
@@ -99,6 +109,7 @@ namespace Lib
             SecondPanelPathStatic = @"C:\";
             FontSizeFirstPanelStatic = 10;
             FontSizeSecondPanelStatic = 10;
+            FontFamilyStatic = new FontFamily("Segoe UI");
         }
     }
 }

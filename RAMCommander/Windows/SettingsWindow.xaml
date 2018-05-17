@@ -19,6 +19,8 @@
                     HorizontalContentAlignment="Center" Name="ActivatedPanelColorButton" Padding="5" />
             <Button Content="Selected item color" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Name="SelectedItemColorButton" Padding="5" />
+            <Button Content="Font family" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                    Name="ChooseFontFamilyButton" Padding="5" />
             <Button Content="Reset defaults" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                     Name="ResetButton" Padding="5" />
         </StackPanel>

@@ -25,7 +25,7 @@ namespace RAMCommander
     // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : Window
     {
-        private readonly Style _focusedStyle;
+        private Style _focusedStyle;
         private readonly Style _standardStyle;
         private DirectoryItem _firstDirectoryItem;
         private List<Item> _firstItems;
@@ -374,10 +374,28 @@ namespace RAMCommander
 
         private void SettingsMenuItemOnClick(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settingsWindow = new SettingsWindow();
+            SettingsWindow settingsWindow = new SettingsWindow(FontFamily);
             settingsWindow.ShowDialog();
             // ReSharper disable once PossibleInvalidOperationException
-            if ((bool) settingsWindow.DialogResult) UpdatePanels();
+            if ((bool) settingsWindow.DialogResult)
+            {
+                try
+                {
+                    _focusedStyle = new Style(typeof(Control));
+                    _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                        new SolidColorBrush(
+                            // ReSharper disable once PossibleNullReferenceException
+                            (Color)ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
+                    FontFamily = SettingsBackup.FontFamilyStatic;
+                }
+                catch (NullReferenceException)
+                {
+                    MessageBox.Show("Can't find standart color");
+                    _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
+                        new SolidColorBrush(Colors.Blue)));
+                }
+                UpdatePanels();
+            }
         }
 
         private void DeleteFastKeyOnClick(object sender, RoutedEventArgs e)
