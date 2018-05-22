@@ -18,7 +18,7 @@ namespace RAMCommander.Windows
         public SettingsWindow(FontFamily currentFont)
         {
             InitializeComponent();
-            
+
             ColorPickerCanvas.SelectedColor =
                 (Color?) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic);
 
@@ -55,9 +55,7 @@ namespace RAMCommander.Windows
             {
                 FontDialog dialog = new FontDialog {Font = new Font(currentFont.Source, 20)};
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
                     SettingsBackup.FontFamilyStatic = new FontFamily(dialog.Font.Name);
-                }
             };
 
             OkButton.Click += (sender, args) => DialogResult = true;

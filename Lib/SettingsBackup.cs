@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using Lib.Properties;
-using FontFamily = System.Windows.Media.FontFamily;
 
 namespace Lib
 {
@@ -21,6 +18,26 @@ namespace Lib
         public static List<string> BookmarksListStatic = new List<string>();
         public static FontFamily FontFamilyStatic;
 
+        public SettingsBackup()
+        {
+        }
+
+        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel,
+            int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel,
+            int fontSizeSecondPanel, List<string> bookmarksList, FontFamily fontFamily)
+        {
+            ActivePanelColor = activePanelColor;
+            SelectedItemColor = selectedItemColor;
+            ImageSizeFirstPanel = imageSizeFirstPanel;
+            ImageSizeSecondPanel = imageSizeSecondPanel;
+            FirstPanelPath = firstPanelPath;
+            SecondPanelPath = secondPanelPath;
+            FontSizeFirstPanel = fontSizeFirstPanel;
+            FontSizeSecondPanel = fontSizeSecondPanel;
+            BookmarksList = bookmarksList;
+            FontFamily = fontFamily.Source;
+        }
+
         public string FontFamily
         {
             get => FontFamilyStatic.Source;
@@ -31,10 +48,6 @@ namespace Lib
         {
             get => BookmarksListStatic;
             set => BookmarksListStatic = value;
-        }
-
-        public SettingsBackup()
-        {
         }
 
         public string ActivePanelColor
@@ -83,20 +96,6 @@ namespace Lib
         {
             get => SecondPanelPathStatic;
             set => SecondPanelPathStatic = value;
-        }
-
-        public SettingsBackup(string activePanelColor, string selectedItemColor, int imageSizeFirstPanel, int imageSizeSecondPanel, string firstPanelPath, string secondPanelPath, int fontSizeFirstPanel, int fontSizeSecondPanel, List<string> bookmarksList, FontFamily fontFamily)
-        {
-            ActivePanelColor = activePanelColor;
-            SelectedItemColor = selectedItemColor;
-            ImageSizeFirstPanel = imageSizeFirstPanel;
-            ImageSizeSecondPanel = imageSizeSecondPanel;
-            FirstPanelPath = firstPanelPath;
-            SecondPanelPath = secondPanelPath;
-            FontSizeFirstPanel = fontSizeFirstPanel;
-            FontSizeSecondPanel = fontSizeSecondPanel;
-            BookmarksList = bookmarksList;
-            FontFamily = fontFamily.Source;
         }
 
         public static void SetDefaults()

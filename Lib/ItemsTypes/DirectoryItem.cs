@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
-using Lib.Interfaces;
 
 namespace Lib.ItemsTypes
 {
-    public class DirectoryItem : Item, IDirectoriesFunctions
+    public class DirectoryItem : Item
     {
         private readonly DirectoryInfo _directoryInfo;
 
@@ -35,9 +33,12 @@ namespace Lib.ItemsTypes
 
             if (!parseSubs) return; // Breakpoint
 
-            Subs = new List<Item>{new BackItem()};
-            Subs.AddRange(_directoryInfo.GetDirectories().Select(subDirectoryInfo => new DirectoryItem(subDirectoryInfo, false)).ToList()); // Equal ParseDirectories()
-            Subs.AddRange(_directoryInfo.GetFiles().Select(subFileInfo => new FileItem(subFileInfo)).ToList()); // Equal ParseFiles()
+            Subs = new List<Item> {new BackItem()};
+            Subs.AddRange(_directoryInfo.GetDirectories()
+                .Select(subDirectoryInfo => new DirectoryItem(subDirectoryInfo, false))
+                .ToList()); // Equal ParseDirectories()
+            Subs.AddRange(_directoryInfo.GetFiles().Select(subFileInfo => new FileItem(subFileInfo))
+                .ToList()); // Equal ParseFiles()
 
             //DirectorySecurity directorySecurity = _directoryInfo.GetAccessControl();
             //directorySecurity.GetSecurityDescriptorSddlForm(AccessControlSections.All);

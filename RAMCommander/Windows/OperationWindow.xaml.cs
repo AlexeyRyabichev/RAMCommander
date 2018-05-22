@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Forms;
 using Lib.ItemsTypes;
+using MessageBox = System.Windows.MessageBox;
 
 namespace RAMCommander.Windows
 {
@@ -27,11 +31,39 @@ namespace RAMCommander.Windows
             CurrentItemProgressBar.Value = 0;
         }
 
-        public int CurrentItemProgress { get; set; }
-
-        public int TotalProgress { get; set; }
-
         public event EventHandler OnFinish;
+
+        public void Archive(Item item, string destination)
+        {
+            try
+            {
+                CurrentItemProgressBar.IsIndeterminate = true;
+                CurrentItemProgressText.Text = "Archiving, please wait";
+                ZipFile.CreateFromDirectory(item.FullName, destination);
+
+                OnFinish?.Invoke(this, null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Cant' archive item");
+            }
+        }
+
+        public void Unarchive(Item item)
+        {
+            try
+            {
+                CurrentItemProgressBar.IsIndeterminate = true;
+                CurrentItemProgressText.Text = "Unarchiving, please wait";
+
+                ZipFile.ExtractToDirectory(item.FullName, Path.Combine(item.PathToParent, Path.GetFileNameWithoutExtension(item.FullName)));
+                OnFinish?.Invoke(this, null);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Can't unarchive item");
+            }
+        }
 
         public void Delete(List<Item> items)
         {

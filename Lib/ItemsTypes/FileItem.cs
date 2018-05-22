@@ -1,9 +1,8 @@
 ﻿using System.IO;
-using Lib.Interfaces;
 
 namespace Lib.ItemsTypes
 {
-    public class FileItem : Item, IFileFunctions
+    public class FileItem : Item
     {
         private readonly FileInfo _fileInfo;
 

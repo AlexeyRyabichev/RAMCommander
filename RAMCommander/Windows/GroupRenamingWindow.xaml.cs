@@ -19,6 +19,7 @@ namespace RAMCommander.Windows
                            "{NAME} - original name\n" +
                            "{PATH} - full path to item\n" +
                            "{SIZE} - item size\n" +
+                           "{ITERATOR} - iterator" +
                            "Example: \"{NAME}{SIZE}additionalWord\"";
 
             OkButton.Click += (sender, args) => DialogResult = true;

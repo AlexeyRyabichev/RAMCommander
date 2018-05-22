@@ -25,10 +25,11 @@ namespace RAMCommander
     // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : Window
     {
-        private Style _focusedStyle;
         private readonly Style _standardStyle;
+        private List<Item> _buffer;
         private DirectoryItem _firstDirectoryItem;
         private List<Item> _firstItems;
+        private Style _focusedStyle;
         private bool _isFirstFocused;
         private DirectoryItem _seconDirectoryItem;
         private List<Item> _secondItems;
@@ -58,8 +59,14 @@ namespace RAMCommander
                 if (File.Exists(SettingsBackup.SettingsFileName))
                     File.Delete(SettingsBackup.SettingsFileName);
                 JavaScriptSerializer javaScriptSerializer = new JavaScriptSerializer();
-                List<string> bookmarksList = (from MenuItem menuItem in BookmarksMenuItem.Items select menuItem.Header.ToString()).ToList();
-                SettingsBackup settingsBackup = new SettingsBackup{FirstPanelPath = FirstPanelPath.Text, SecondPanelPath = SecondPanelPath.Text, BookmarksList = bookmarksList};
+                List<string> bookmarksList =
+                    (from MenuItem menuItem in BookmarksMenuItem.Items select menuItem.Header.ToString()).ToList();
+                SettingsBackup settingsBackup = new SettingsBackup
+                {
+                    FirstPanelPath = FirstPanelPath.Text,
+                    SecondPanelPath = SecondPanelPath.Text,
+                    BookmarksList = bookmarksList
+                };
                 File.WriteAllText(SettingsBackup.SettingsFileName, javaScriptSerializer.Serialize(settingsBackup));
             };
             InitializeComponent();
@@ -82,16 +89,13 @@ namespace RAMCommander
             FirstPanel.SelectionChanged += PanelOnSelectionChanged;
             SecondPanel.SelectionChanged += PanelOnSelectionChanged;
 
-            //FirstPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-            //SecondPanel.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-
             _focusedStyle = new Style(typeof(Control));
             try
             {
                 _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
                     new SolidColorBrush(
                         // ReSharper disable once PossibleNullReferenceException
-                        (Color)ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
+                        (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
             }
             catch (NullReferenceException)
             {
@@ -116,21 +120,9 @@ namespace RAMCommander
             SecondPanel.KeyDown += PanelOnKeyDown;
 
             #endregion
-
-            #region Drag'n'Drop
-
-            //TODO: Finish Drag'n'Drop
-
-            FirstPanel.AllowDrop = true;
-            SecondPanel.AllowDrop = true;
-
+            
             FirstPanel.PreviewMouseDown += PanelOnPreviewMouseDown;
             SecondPanel.PreviewMouseDown += PanelOnPreviewMouseDown;
-
-            FirstPanel.Drop += PanelOnDrop;
-            SecondPanel.Drop += PanelOnDrop;
-
-            #endregion
 
             #region Menu
 
@@ -147,25 +139,76 @@ namespace RAMCommander
             CopyFastKeyWindows.Click += CopyFastKeyWindowsOnClick;
             RenameTemplateFastKey.Click += RenameTemplateFastKeyOnClick;
             CheckHashSums.Click += CheckHashSumsOnClick;
+            Archive.Click += ArchiveOnClick;
+            Unarchive.Click += UnarchiveOnClick;
 
             SettingsMenuItem.Click += SettingsMenuItemOnClick;
 
             #endregion
-            
+
 
             if (File.Exists("settings.json"))
             {
-                SettingsBackup unused = (SettingsBackup) NewtonSoft.Deserialize(File.ReadAllText("settings.json"), typeof(SettingsBackup));
+                try
+                {
+                    SettingsBackup unused =
+                        (SettingsBackup)NewtonSoft.Deserialize(File.ReadAllText("settings.json"), typeof(SettingsBackup));
+                }
+                catch (Exception)
+                {
+                    SettingsBackup.SetDefaults();;   
+                }
                 CheckPanelFocus();
             }
             else
+            {
                 SettingsBackup.SetDefaults();
+            }
 
             FillTable(true, SettingsBackup.FirstPanelPathStatic);
             FillTable(false, SettingsBackup.SecondPanelPathStatic);
             _isFirstFocused = true;
             CheckPanelFocus();
             FirstPanel.Focus();
+        }
+
+        private void UnarchiveOnClick(object sender, RoutedEventArgs e)
+        {
+            OperationWindow operationWindow = new OperationWindow("Unarchiving");
+            operationWindow.OnFinish += (o, args) =>
+            {
+                operationWindow.Close();
+                UpdatePanels();
+            };
+            List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                .Where(item => item.IsChecked).ToList();
+            if (items.Count < 1)
+                return;
+            operationWindow.Show();
+            operationWindow.Unarchive(items[0]);
+            UpdatePanels();
+        }
+
+        private void ArchiveOnClick(object sender, RoutedEventArgs e)
+        {
+            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Archive name");
+            if ((bool) chooseNameWindow.ShowDialog())
+            {
+                string destination = Path.Combine(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text,
+                                         chooseNameWindow.NewName) + ".zip";
+                OperationWindow operationWindow = new OperationWindow("Archiving");
+                operationWindow.OnFinish += (o, args) =>
+                {
+                    operationWindow.Close();
+                    UpdatePanels();
+                };
+                List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
+                    .Where(item => item.IsChecked).ToList();
+                if (items.Count < 1)
+                    return;
+                operationWindow.Show();
+                operationWindow.Archive(items[0], destination);
+            }
         }
 
         private void AddToBookmarksSecondButtonOnClick(object sender, RoutedEventArgs e)
@@ -186,7 +229,7 @@ namespace RAMCommander
 
         private void OpenItemOnClick(object sender, RoutedEventArgs e)
         {
-            FillTable(_isFirstFocused, ((MenuItem) ((MenuItem)sender).Parent).Header.ToString());
+            FillTable(_isFirstFocused, ((MenuItem) ((MenuItem) sender).Parent).Header.ToString());
         }
 
         private void DeleteItemOnClick(object sender, EventArgs e)
@@ -196,13 +239,13 @@ namespace RAMCommander
 
         private void AddToBookmarksFirstButtonOnClick(object sender, RoutedEventArgs e)
         {
-            MenuItem deleteItem = new MenuItem { Header = "Delete" };
-            MenuItem openItem = new MenuItem { Header = "Open" };
+            MenuItem deleteItem = new MenuItem {Header = "Delete"};
+            MenuItem openItem = new MenuItem {Header = "Open"};
 
             deleteItem.Click += DeleteItemOnClick;
             openItem.Click += OpenItemOnClick;
 
-            MenuItem item = new MenuItem { Header = FirstPanelPath.Text };
+            MenuItem item = new MenuItem {Header = FirstPanelPath.Text};
 
             item.Items.Add(deleteItem);
             item.Items.Add(openItem);
@@ -253,10 +296,12 @@ namespace RAMCommander
                 string template = groupRenamingWindow.NewName;
                 List<Item> items = (_isFirstFocused ? FirstPanel : SecondPanel).Items.Cast<Item>()
                     .Where(item => item.IsChecked).ToList();
+                int iterator = 1;
                 foreach (Item item in items)
                 {
                     string newName = template.Replace("{DATE}", item.DateModified).Replace("{NAME}", item.Name)
-                        .Replace("{PATH}", item.FullName).Replace("{SIZE}", item.SizeItem);
+                        .Replace("{PATH}", item.FullName).Replace("{SIZE}", item.SizeItem).Replace("{ITERATOR}", iterator.ToString());
+                    iterator += 1;
                     item.Rename(newName);
                 }
             }
@@ -308,7 +353,7 @@ namespace RAMCommander
 
             foreach (Item item in items)
             {
-                ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename file", item.Name);
+                ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename file", Path.GetFileNameWithoutExtension(item.FullName));
                 // ReSharper disable once PossibleInvalidOperationException
                 if ((bool) chooseNameWindow.ShowDialog())
                     item.Rename(chooseNameWindow.NewName);
@@ -338,11 +383,15 @@ namespace RAMCommander
                     settingsBackup.ImageSizeSecondPanel += 10;
                 }
 
-                listView.FontSize = _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
+                listView.FontSize =
+                    _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
 
                 listView.ItemsSource = null;
 
-                foreach (Item item in _isFirstFocused ? _firstItems : _secondItems) item.ImageSize = (_isFirstFocused ? settingsBackup.ImageSizeFirstPanel : settingsBackup.ImageSizeSecondPanel);
+                foreach (Item item in _isFirstFocused ? _firstItems : _secondItems)
+                    item.ImageSize = _isFirstFocused
+                        ? settingsBackup.ImageSizeFirstPanel
+                        : settingsBackup.ImageSizeSecondPanel;
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
             }
             else if (e.Delta < 0)
@@ -362,12 +411,15 @@ namespace RAMCommander
                         settingsBackup.ImageSizeSecondPanel -= 10;
                 }
 
-                listView.FontSize = _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
+                listView.FontSize =
+                    _isFirstFocused ? settingsBackup.FontSizeFirstPanel : settingsBackup.FontSizeSecondPanel;
 
                 listView.ItemsSource = null;
 
                 foreach (Item item in _isFirstFocused ? _firstItems : _secondItems)
-                    item.ImageSize = (_isFirstFocused ? settingsBackup.ImageSizeFirstPanel : settingsBackup.ImageSizeSecondPanel);
+                    item.ImageSize = _isFirstFocused
+                        ? settingsBackup.ImageSizeFirstPanel
+                        : settingsBackup.ImageSizeSecondPanel;
                 listView.ItemsSource = _isFirstFocused ? _firstItems : _secondItems;
             }
         }
@@ -385,7 +437,7 @@ namespace RAMCommander
                     _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
                         new SolidColorBrush(
                             // ReSharper disable once PossibleNullReferenceException
-                            (Color)ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
+                            (Color) ColorConverter.ConvertFromString(SettingsBackup.ActivePanelColorStatic)))); //fae1c0
                     FontFamily = SettingsBackup.FontFamilyStatic;
                 }
                 catch (NullReferenceException)
@@ -394,6 +446,7 @@ namespace RAMCommander
                     _focusedStyle.Setters.Add(new Setter(BackgroundProperty,
                         new SolidColorBrush(Colors.Blue)));
                 }
+
                 UpdatePanels();
             }
         }
@@ -405,7 +458,7 @@ namespace RAMCommander
             OperationWindow operationWindow = new OperationWindow("Deleting");
             operationWindow.OnFinish += (o, s) =>
             {
-                UpdatePanels(); 
+                UpdatePanels();
                 operationWindow.Close();
             };
             operationWindow.Show();
@@ -454,6 +507,35 @@ namespace RAMCommander
 
         private void PanelOnKeyDown(object sender, KeyEventArgs keyEventArgs)
         {
+            ListView listView = (ListView)sender;
+            _isFirstFocused = listView.Name == FirstPanel.Name;
+            CheckPanelFocus();
+
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                switch (keyEventArgs.Key)
+                {
+                    case Key.C:
+                        _buffer = new List<Item>();
+                        foreach (object firstPanelItem in FirstPanel.Items)
+                            if (((Item)firstPanelItem).IsChecked && !(firstPanelItem is BackItem))
+                                _buffer.Add((Item)firstPanelItem);
+                        break;
+                    case Key.V:
+                        if (_buffer.Count >= 1)
+                        {
+                            OperationWindow operationWindow = new OperationWindow("Copying");
+                            operationWindow.OnFinish += (o, s) =>
+                            {
+                                UpdatePanels();
+                                operationWindow.Close();
+                            };
+                            operationWindow.Show();
+                            operationWindow.Copy(_buffer, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
+                        }
+
+                        break;
+                }
+
             Item item = null;
             try
             {
@@ -493,12 +575,18 @@ namespace RAMCommander
                 case Key.F2:
                     Rename(item, _isFirstFocused);
                     break;
+                case Key.F5:
+                    UpdatePanels();
+                    break;
+                case Key.F11:
+                    WindowState = WindowState.Maximized;
+                    break;
             }
         }
 
         private void Rename(Item item, bool isFirst)
         {
-            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename: ", item.Name);
+            ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Rename: ", Path.GetFileNameWithoutExtension(item.FullName));
             if (chooseNameWindow.ShowDialog() == true)
             {
                 item.Rename(chooseNameWindow.NewName);
@@ -513,9 +601,7 @@ namespace RAMCommander
 
             ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Create new folder");
             if (chooseNameWindow.ShowDialog() == true)
-            {
                 directoryItem.Create(directoryItem.FullName, chooseNameWindow.NewName, Item.DIRECTORY);
-            }
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
@@ -525,9 +611,7 @@ namespace RAMCommander
                 new DirectoryItem(_isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
             ChooseNameWindow chooseNameWindow = new ChooseNameWindow("Create new file");
             if (chooseNameWindow.ShowDialog() == true)
-            {
                 directoryItem.Create(directoryItem.FullName, chooseNameWindow.NewName, Item.FILE);
-            }
             FillTable(_isFirstFocused, _isFirstFocused ? FirstPanelPath.Text : SecondPanelPath.Text);
         }
 
@@ -554,20 +638,6 @@ namespace RAMCommander
 
             //if (mouseButtonEventArgs.LeftButton == MouseButtonState.Pressed && mouseButtonEventArgs.ClickCount == 1)
             //    DragDrop.DoDragDrop(listView, listView.Items.CurrentItem, DragDropEffects.Copy);
-        }
-
-        private void PanelOnDrop(object sender, DragEventArgs dragEventArgs)
-        {
-            //DataGrid dataGrid = (DataGrid)sender;
-            //CheckPanelFocus();
-
-            //string path = (string)dragEventArgs.Data.GetData(DataFormats.StringFormat);
-            //Item currentItem = null;
-            //if (Directory.Exists(path))
-            //    currentItem = new DirectoryItem(path, false);
-            //else if (File.Exists(path))
-            //    currentItem = new FileItem(path);
-            //if (currentItem != null) MessageBox.Show($"{currentItem.Name} to {((DataGrid)sender).Name}");
         }
 
         private void PanelOnMouseDoubleClick(object sender, MouseButtonEventArgs mouseButtonEventArgs)
@@ -666,12 +736,14 @@ namespace RAMCommander
             ListViewItem listViewItem =
                 (ListViewItem) (_isFirstFocused ? FirstPanel : SecondPanel).ItemContainerGenerator.ContainerFromIndex(
                     int.Parse(checkBox.Uid));
+            ((Item) (_isFirstFocused ? FirstPanel.Items : SecondPanel.Items)[int.Parse(checkBox.Uid)]).IsChecked = true;
             if (checkBox.IsChecked != null && (bool) checkBox.IsChecked)
                 try
                 {
                     listViewItem.Background =
                         // ReSharper disable once PossibleNullReferenceException
-                        new SolidColorBrush((Color)ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic));
+                        new SolidColorBrush(
+                            (Color) ColorConverter.ConvertFromString(SettingsBackup.SelectedItemColorStatic));
                 }
                 catch (NullReferenceException)
                 {

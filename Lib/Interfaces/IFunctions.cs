@@ -6,7 +6,7 @@ namespace Lib.Interfaces
     public interface IFunctions
     {
         /// <summary>
-        /// Copy item
+        ///     Copy item
         /// </summary>
         /// <param name="progress">Progress of copying [0, 100]</param>
         /// <param name="destination">Destination path</param>
@@ -14,24 +14,24 @@ namespace Lib.Interfaces
         Task Copy(IProgress<double> progress, string destination);
 
         /// <summary>
-        /// Move item
+        ///     Move item
         /// </summary>
         /// <param name="destination">Destination path</param>
         void Move(string destination);
 
         /// <summary>
-        /// Delete item
+        ///     Delete item
         /// </summary>
         void Delete();
 
         /// <summary>
-        /// Rename item
+        ///     Rename item
         /// </summary>
         /// <param name="newName">New name for item</param>
         void Rename(string newName);
 
         /// <summary>
-        /// Create item
+        ///     Create item
         /// </summary>
         /// <param name="destination">Destination path</param>
         /// <param name="name">Item name</param>

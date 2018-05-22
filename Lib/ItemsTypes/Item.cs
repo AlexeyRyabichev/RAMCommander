@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
 using System.Windows;
 using Lib.Interfaces;
@@ -15,10 +16,11 @@ namespace Lib.ItemsTypes
 
         public async Task Copy(IProgress<double> progress, string destination)
         {
+            if (this is DirectoryItem || this is BackItem)
+                return;
+
             while (File.Exists(Path.Combine(destination, Name)))
-            {
                 Name = Path.GetFileNameWithoutExtension(Path.Combine(PathToParent, Name)) + "_Copy." + Extension;
-            }
 
             byte[] buffer = new byte[1024 * 1024]; // 1mb
             bool cancelFlag = false;
@@ -39,7 +41,7 @@ namespace Lib.ItemsTypes
                         {
                             totalBytes += currentBlockSize;
 
-                            percentage = totalBytes * 100.0 / fileLength; 
+                            percentage = totalBytes * 100.0 / fileLength;
 
                             destFileStream.Write(buffer, 0, currentBlockSize);
 
@@ -57,34 +59,41 @@ namespace Lib.ItemsTypes
         public void Move(string destination)
         {
             Item item = this;
-            if (item is FileItem)
-                if (Directory.Exists(destination) && File.Exists(item.FullName))
+            switch (item)
+            {
+                case FileItem _ when Directory.Exists(destination) && File.Exists(item.FullName):
                     if (File.Exists(Path.Combine(destination, item.Name)))
                         MessageBox.Show("File already exists");
                     else
                         File.Move(item.FullName, Path.Combine(destination, item.Name));
-                else
+                    break;
+                case FileItem _:
                     MessageBox.Show("File or directory don't exists");
-            else if (item is DirectoryItem)
-                if (Directory.Exists(destination) && Directory.Exists(item.FullName))
+                    break;
+                case DirectoryItem _ when Directory.Exists(destination) && Directory.Exists(item.FullName):
                     if (Directory.Exists(Path.Combine(destination, item.Name)))
                         MessageBox.Show("Directory already exists");
                     else
                         Directory.Move(item.FullName, Path.Combine(destination, item.Name));
-                else
+                    break;
+                case DirectoryItem _:
                     MessageBox.Show("Directory don't exists");
+                    break;
+            }
         }
 
         public void Delete()
         {
             Item item = this;
-            if (item is FileItem)
-                if (File.Exists(item.FullName))
+            switch (item)
+            {
+                case FileItem _ when File.Exists(item.FullName):
                     File.Delete(item.FullName);
-                else
+                    break;
+                case FileItem _:
                     MessageBox.Show("File don't exists");
-            else if (item is DirectoryItem)
-                if (Directory.Exists(item.FullName))
+                    break;
+                case DirectoryItem _ when Directory.Exists(item.FullName):
                     if (new DirectoryItem(item.FullName).Subs != null)
                     {
                         foreach (Item sub in new DirectoryItem(item.FullName).Subs)
@@ -96,40 +105,53 @@ namespace Lib.ItemsTypes
                     {
                         Directory.Delete(item.FullName);
                     }
-                else
+
+                    break;
+                case DirectoryItem _:
                     MessageBox.Show("Directory don't exists");
+                    break;
+            }
         }
 
         public void Rename(string newName)
         {
             Item item = this;
-            if (item is FileItem)
-                if (File.Exists(item.FullName))
+            switch (item)
+            {
+                case FileItem _ when File.Exists(item.FullName):
                     if (File.Exists(Path.Combine(PathToParent, newName)))
                         MessageBox.Show("File already exists");
                     else
                         try
                         {
-                            File.Move(item.FullName, Path.Combine(PathToParent, newName.Replace(":", "-").Replace("/", "_")));
+                            File.Move(item.FullName,
+                                Path.Combine(PathToParent, newName.Replace(":", "-").Replace("/", "_")) + "." + Extension);
                         }
                         catch (Exception)
                         {
                             MessageBox.Show("Sorry, wrong file name");
                         }
-                else
+
+                    break;
+                case FileItem _:
                     MessageBox.Show("File don't exists");
-            else if (item is DirectoryItem)
-                if (Directory.Exists(item.FullName))
+                    break;
+                case DirectoryItem _ when Directory.Exists(item.FullName):
                     if (Directory.Exists(Path.Combine(PathToParent, newName)))
                         MessageBox.Show("Directory already exists");
                     else
-                        Directory.Move(item.FullName, Path.Combine(PathToParent, newName));
-                else
+                        Directory.Move(item.FullName, Path.Combine(PathToParent, newName) + "." + Extension);
+                    break;
+                case DirectoryItem _:
                     MessageBox.Show("Directory don't exists");
+                    break;
+            }
         }
 
         public void Create(string destination, string name, string type)
         {
+            if (name == "")
+                return;
             if (type == FILE)
                 if (Directory.Exists(destination))
                     if (!File.Exists(Path.Combine(destination, name)))

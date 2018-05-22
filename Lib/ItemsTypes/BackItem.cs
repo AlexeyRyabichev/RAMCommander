@@ -5,7 +5,7 @@ namespace Lib.ItemsTypes
     public class BackItem : Item
     {
         /// <summary>
-        /// Create item of BackItem class
+        ///     Create item of BackItem class
         /// </summary>
         public BackItem()
         {

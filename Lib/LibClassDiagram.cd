@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Lib.ItemsTypes.BackItem">
+    <Position X="8.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ItemsTypes\BackItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lib.ItemsTypes.DirectoryItem">
+    <Position X="8.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ItemsTypes\DirectoryItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lib.ItemsTypes.FileItem">
+    <Position X="8.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAABAAAQ=</HashCode>
+      <FileName>ItemsTypes\FileItem.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lib.ItemsTypes.Item">
+    <Position X="6.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAOAAgIAAAAAAAAUAAgUIAWAAEQEAQAAAwAA=</HashCode>
+      <FileName>ItemsTypes\Item.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Lib.Properties.Resources" Collapsed="true">
+    <Position X="13.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAACAAABEAAAAQAAAAAAAAAAAAAAAIA=</HashCode>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Lib.SettingsBackup">
+    <Position X="10.25" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>mEAQABAAYAABAAAAIgIAAAAAIAAAAAEEUAgCAAEABAA=</HashCode>
+      <FileName>SettingsBackup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="Lib.Interfaces.IFunctions">
+    <Position X="12" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAgEAAEAAAAAAAAAAgAA=</HashCode>
+      <FileName>Interfaces\IFunctions.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Lib.Interfaces.IItem">
+    <Position X="12" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAGAAgIAAAAAAAAQAAAQIASAAAQEAAAAAQAA=</HashCode>
+      <FileName>Interfaces\IItem.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
